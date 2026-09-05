@@ -189,6 +189,8 @@ a{color:inherit;text-decoration:none}
 .breadcrumb svg{width:13px;height:13px}
 .breadcrumb strong{color:var(--texto);font-weight:550;font-size:var(--t3)}
 .top-actions{display:flex;align-items:center;gap:12px}
+.dica{position:fixed;z-index:210;pointer-events:none;background:var(--toast-fundo);color:var(--toast-texto);font-size:var(--t1);line-height:1.35;padding:6px 9px;border-radius:var(--r1);box-shadow:var(--sombra-2);max-width:220px;width:max-content;animation:dica-entra 140ms var(--curva)}
+@keyframes dica-entra{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:none}}
 .save-status{font-size:var(--t1);color:var(--texto-4);display:flex;align-items:center;gap:6px;max-width:220px}
 .save-status svg{width:15px;height:15px}
 /* O visto que se desenha ao terminar de salvar. */
@@ -660,7 +662,7 @@ const ICONS = {
 function icon(name){const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 24 24');svg.setAttribute('aria-hidden','true');const path=document.createElementNS(svg.namespaceURI,'path');path.setAttribute('d',ICONS[name]||ICONS.align);svg.append(path);return svg;}
 function node(tag,cls,text){const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n;}
 function button(text,fn,cls='btn',symbol){const b=node('button',cls);b.type='button';if(symbol)b.append(icon(symbol));if(text)b.append(document.createTextNode(text));b.addEventListener('click',fn);return b;}
-function iconButton(label,symbol,fn){const b=button('',fn,'icon-btn',symbol);b.setAttribute('aria-label',label);b.title=label;return b;}
+function iconButton(label,symbol,fn){const b=button('',fn,'icon-btn',symbol);b.setAttribute('aria-label',label);return b;}
 document.querySelectorAll('[data-icon]').forEach(n=>n.replaceChildren(icon(n.dataset.icon)));
 const embedded=JSON.parse($('embedded-data').textContent);
 const FOLIUM_VERSAO='0.1.0';
@@ -716,7 +718,7 @@ function aplicarTema(){
  if(botao){
   botao.replaceChildren(icon(escuro?'sol':'lua'));
   const rotulo=escuro?'Mudar para o tema claro':'Mudar para o tema escuro';
-  botao.setAttribute('aria-label',rotulo);botao.title=rotulo;
+  botao.setAttribute('aria-label',rotulo);
  }
  // A janela nativa acompanha: semáforos, menus e a cor de fundo antes da pintura.
  if(desktop?.setTheme)desktop.setTheme(temaPreferido).catch(()=>{});
@@ -1055,6 +1057,36 @@ $('exportPDF').onclick=()=>{
 };
 $('readText').onclick=()=>showDialog('Confira o texto do currículo',body=>{body.append(node('p','','Esta é a ordem do texto no editor. O PDF mantém uma coluna e texto selecionável para facilitar a extração; a interpretação pode variar entre sistemas.'));body.append(node('pre','',$('cv').innerText));});
 $('help').onclick=()=>showDialog('Um currículo fácil de cuidar',body=>{const steps=node('ol','steps');['Escolha uma seção no menu e preencha os campos. A prévia acompanha suas alterações.','Adicione experiências, atividades ou seções conforme precisar. Use as setas para mudar a ordem.','Acompanhe o aviso de tamanho abaixo da prévia. Em Aparência, você pode ajustar o espaçamento.','Use Exportar PDF quando estiver pronto para enviar.','No menu de três pontos, escolha Salvar cópia editável para guardar um HTML com seus dados. Ele abre em outro computador, mesmo sem internet.'].forEach(t=>steps.append(node('li','',t)));body.append(steps,node('p','page-note',desktop?'O Folium funciona offline e salva seus dados na pasta do aplicativo neste computador, com uma cópia de recuperação. Guarde backups também em outro lugar.':'O salvamento automático fica neste navegador. Limpar seus dados ou trocar de navegador pode apagar o rascunho; guarde uma cópia editável de tempos em tempos.'));});
+// Dica flutuante para o que só tem ícone. O title do navegador demora quase um
+// segundo, não segue o tema e não dá para posicionar — não serve aqui.
+const ALVOS_DICA='.icon-btn,[data-dica]';
+const dica=node('div','dica');dica.setAttribute('role','tooltip');dica.hidden=true;document.body.append(dica);
+let dicaTimer=null,dicaAlvo=null;
+function esconderDica(){clearTimeout(dicaTimer);dicaTimer=null;dicaAlvo=null;dica.hidden=true;}
+function mostrarDica(el){
+ const texto=el.dataset.dica||el.getAttribute('aria-label')||'';
+ if(!texto||el.disabled)return;
+ dicaAlvo=el;dica.textContent=texto;dica.hidden=false;
+ const r=el.getBoundingClientRect(),d=dica.getBoundingClientRect();
+ dica.style.left=Math.max(8,Math.min(r.left+r.width/2-d.width/2,innerWidth-d.width-8))+'px';
+ // Abaixo do alvo, a não ser que não caiba — aí por cima.
+ dica.style.top=(r.bottom+8+d.height>innerHeight-8?Math.max(8,r.top-8-d.height):r.bottom+8)+'px';
+}
+document.addEventListener('pointerover',e=>{
+ const el=e.target.closest?.(ALVOS_DICA);
+ // Dentro de um diálogo a dica ficaria atrás da camada superior; lá o X já se explica.
+ if(!el||el===dicaAlvo||el.closest('dialog'))return;
+ esconderDica();
+ dicaTimer=setTimeout(()=>mostrarDica(el),380);
+});
+document.addEventListener('pointerout',e=>{
+ const el=e.target.closest?.(ALVOS_DICA);
+ if(el&&!el.contains(e.relatedTarget))esconderDica();
+});
+document.addEventListener('focusin',e=>{const el=e.target.closest?.(ALVOS_DICA);if(el&&!el.closest('dialog'))mostrarDica(el);else esconderDica();});
+document.addEventListener('focusout',esconderDica);
+document.addEventListener('click',esconderDica,true);
+window.addEventListener('scroll',esconderDica,true);
 const listaLateral=document.querySelector('.sidebar-scroll');
 const marcarLista=()=>listaLateral.classList.toggle('rolada',listaLateral.scrollTop>2);
 listaLateral.addEventListener('scroll',marcarLista,{passive:true});

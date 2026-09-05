@@ -1,0 +1,30 @@
+{
+  "identifier": "com.folium.curriculum.smoketest",
+  "app": {
+    "security": {
+      "capabilities": [
+        "main",
+        {
+          "identifier": "native-integration-test",
+          "windows": [
+            "main"
+          ],
+          "permissions": [
+            "allow-smoke-result"
+          ]
+        }
+      ]
+    },
+    "windows": [
+      {
+        "label": "main",
+        "title": "Folium — teste automatizado",
+        "visible": false,
+        "backgroundThrottling": "disabled",
+        "width": 1360,
+        "height": 940,
+        "devtools": false
+      }
+    ]
+  }
+}

@@ -1,0 +1,70 @@
+name: Instaladores do Folium
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'curriculo.html'
+      - 'src/**'
+      - 'scripts/**'
+      - 'tests/**'
+      - 'src-tauri/**'
+      - 'package*.json'
+      - '.github/workflows/desktop.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: ${{ matrix.name }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Windows x64
+            os: windows-latest
+            target: x86_64-pc-windows-msvc
+            bundles: nsis
+            artifact: Folium-Windows
+          - name: Mac Apple Silicon e Intel
+            os: macos-latest
+            target: universal-apple-darwin
+            bundles: dmg
+            artifact: Folium-Mac
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6
+        with:
+          workspaces: src-tauri
+      - name: Targets do Mac
+        if: runner.os == 'macOS'
+        run: rustup target add aarch64-apple-darwin x86_64-apple-darwin
+      - run: npm ci
+      - run: npm test
+      - run: npx playwright install chromium
+      - run: npm run test:ui
+      - run: npm run build
+      - run: cargo test --locked --manifest-path src-tauri/Cargo.toml
+      - name: Preparar teste do aplicativo nativo
+        run: npm run desktop:build -- --debug --features smoke-test --config src-tauri/tauri.smoke.conf.json --no-bundle
+      - name: Testar edição e salvamento no WebView nativo
+        run: node scripts/native-smoke.mjs
+      - name: Compilar instalador
+        run: npm run desktop:build -- --target ${{ matrix.target }} --bundles ${{ matrix.bundles }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: |
+            src-tauri/target/${{ matrix.target }}/release/bundle/nsis/*-setup.exe
+            src-tauri/target/${{ matrix.target }}/release/bundle/dmg/*.dmg
+          if-no-files-found: error
+          retention-days: 30

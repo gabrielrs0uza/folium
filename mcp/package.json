@@ -1,0 +1,31 @@
+{
+  "name": "folium-mcp",
+  "version": "0.1.0",
+  "description": "Servidor MCP do Folium: sua IA lê e edita o currículo guardado no seu computador",
+  "type": "module",
+  "bin": {
+    "folium-mcp": "servidor.js"
+  },
+  "files": [
+    "servidor.js",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT",
+  "keywords": [
+    "mcp",
+    "modelcontextprotocol",
+    "curriculo",
+    "resume",
+    "folium"
+  ],
+  "scripts": {
+    "test": "node --test testes/*.test.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "zod": "^4.5.4"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "name": "folium-desktop",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Editor de currículo offline para Windows e macOS",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "dev": "tauri dev",
+    "tauri": "tauri",
+    "desktop:build": "tauri build",
+    "test": "node --test tests/*.test.mjs",
+    "test:ui": "node tests/editor.smoke.mjs"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "2.11.1"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "2.11.4",
+    "esbuild": "0.25.12",
+    "playwright": "1.58.2"
+  }
+}

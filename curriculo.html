@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#fafafa">
+<title>Meu currículo · Folium</title>
+<style>
+/* ==========================================================================
+   Folium — folha de estilo.
+   Ordem: fichário de tokens · base · componentes · telas · movimento.
+   Nenhuma cor literal vive fora do fichário. É o que permite o tema escuro
+   ser uma troca de valores, e não uma segunda folha de estilo.
+   A folha A4 (.paper e .cv-*) é a exceção deliberada: ela é papel, e papel
+   não muda de cor com o tema — é o que vai sair impresso.
+   ========================================================================== */
+
+/* --- fichário · escalas --------------------------------------------------- */
+:root{
+ --ui:-apple-system,BlinkMacSystemFont,'Segoe UI Variable Text','Segoe UI','Avenir Next',system-ui,sans-serif;
+ --marca-fonte:'Avenir Next',Avenir,var(--ui);
+ --base:10.2pt;
+ /* tipografia: quatro passos. A hierarquia vem de peso e cor, não de meio pixel. */
+ --t1:11px;--t2:12px;--t3:13px;--t4:21px;
+ --r1:6px;--r2:8px;--r3:12px;--r4:16px;
+ --rapido:120ms;--medio:180ms;--calmo:260ms;
+ --curva:cubic-bezier(.32,.72,0,1);
+ --curva-saida:cubic-bezier(.4,0,1,1);
+ --lateral:226px;
+}
+
+/* --- fichário · tema claro ------------------------------------------------ */
+:root,:root[data-tema="claro"]{
+ color-scheme:light;
+ --tela:#fafafa;
+ --painel:#f6f7f6;
+ --carta:#ffffff;
+ --carta-2:#fafafa;
+ --repouso:#f3f4f3;
+ --hover:#eef0ee;
+ --topo:rgba(250,250,250,.82);
+ --campo:#ffffff;
+ --campo-traco:#e3e6e4;
+ --texto:#171a18;
+ --texto-2:#3f4642;
+ --texto-3:#6b7570;
+ --texto-4:#9aa39d;
+ --traco:#e3e6e4;
+ --traco-2:#eff1ef;
+ --traco-3:#cdd3cf;
+ --marca:#047857;
+ --marca-texto:#065f46;
+ --marca-eco:#e6f3ec;
+ --marca-eco-2:#f1f8f4;
+ --marca-ponto:#10b981;
+ --pastilha:#ffffff;
+ --primaria:#047857;
+ --primaria-hover:#03614a;
+ --primaria-texto:#ffffff;
+ --aviso:#8a5a12;
+ --aviso-ponto:#b98b3a;
+ --perigo:#a33a28;
+ --perigo-traco:#eddcd8;
+ --perigo-eco:#fdf5f3;
+ --ponto-ok:#059669;
+ --barra:#34d399;
+ --foco:#5eaa8a;
+ --rolagem:#cdd3cf;
+ --rolagem-viva:#9aa39d;
+ --toast-fundo:#171a18;
+ --toast-texto:#ffffff;
+ --toast-hover:#313834;
+ --fundo-modal:rgba(23,26,24,.3);
+ --sombra-1:0 1px 2px rgba(15,20,17,.05);
+ --sombra-2:0 2px 6px rgba(15,20,17,.05),0 8px 24px rgba(15,20,17,.06);
+ --sombra-3:0 16px 48px rgba(15,20,17,.16);
+ --papel-traco:#e3e6e4;
+ --papel-sombra:0 3px 5px rgba(15,20,17,.04),0 12px 35px rgba(15,20,17,.08);
+}
+
+/* --- fichário · tema escuro ----------------------------------------------- */
+/* Derivado do claro, não invertido: a base é verde-acinzentada fria, para o
+   escuro continuar parente do verde da marca. No escuro a elevação vem de
+   superfície mais clara e borda — sombra não existe no escuro. */
+:root[data-tema="escuro"]{
+ color-scheme:dark;
+ --tela:#0d0f0e;
+ --painel:#121514;
+ --carta:#171a19;
+ --carta-2:#1b1f1d;
+ --repouso:#1c201e;
+ --hover:#232826;
+ --topo:rgba(18,21,20,.8);
+ --campo:#111413;
+ --campo-traco:#2b312e;
+ --texto:#e8ebe9;
+ --texto-2:#b9c1bd;
+ --texto-3:#98a29d;
+ --texto-4:#79837e;
+ --traco:#262b29;
+ --traco-2:#202422;
+ --traco-3:#39413d;
+ --marca:#34d399;
+ --marca-texto:#6ee7b7;
+ --marca-eco:#16291f;
+ --marca-eco-2:#131e18;
+ --marca-ponto:#34d399;
+ --pastilha:#2a302d;
+ --primaria:#059669;
+ --primaria-hover:#0aa877;
+ --primaria-texto:#04150e;
+ --aviso:#d9ad6b;
+ --aviso-ponto:#c79a52;
+ --perigo:#e79b87;
+ --perigo-traco:#40302b;
+ --perigo-eco:#241b18;
+ --ponto-ok:#34d399;
+ --barra:#059669;
+ --foco:#34d399;
+ --rolagem:#39413d;
+ --rolagem-viva:#4c5551;
+ --toast-fundo:#232826;
+ --toast-texto:#e8ebe9;
+ --toast-hover:#2f3532;
+ --fundo-modal:rgba(0,0,0,.62);
+ --sombra-1:none;
+ --sombra-2:0 2px 6px rgba(0,0,0,.32),0 8px 24px rgba(0,0,0,.3);
+ --sombra-3:0 20px 60px rgba(0,0,0,.55);
+ --papel-traco:#2b322e;
+ --papel-sombra:0 4px 10px rgba(0,0,0,.4),0 18px 50px rgba(0,0,0,.45);
+}
+
+/* --- base ----------------------------------------------------------------- */
+*{box-sizing:border-box}
+html{background:var(--tela)}
+body{margin:0;background:var(--tela);color:var(--texto);font:var(--t3)/1.5 var(--ui);-webkit-font-smoothing:antialiased}
+h1,h2,h3,p{margin:0}
+[hidden]{display:none!important}
+[data-icon]{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+button,input,textarea,select{font:inherit}
+button,select,a,input,textarea{-webkit-tap-highlight-color:transparent}
+button{border:0;background:none;color:inherit;cursor:pointer;transition:background var(--rapido),border-color var(--rapido),box-shadow var(--rapido),color var(--rapido),opacity var(--rapido),transform 90ms var(--curva)}
+button:disabled{cursor:default;opacity:.35}
+button:hover:not(:disabled):not(.switch){background:var(--hover)}
+/* A pressão do botão — o "clique" que o Linear tem e que custa duas linhas. */
+.btn:active:not(:disabled),.icon-btn:active:not(:disabled),.add-button:active,.menu button:active,.segmented button:active,.mobile-tabs button:active,.doc-switch-btn:active:not(:disabled){transform:scale(.97)}
+button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--foco);outline-offset:2px}
+svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+button svg{width:18px;height:18px}
+a{color:inherit;text-decoration:none}
+.app{min-height:100vh}
+
+/* --- barra lateral -------------------------------------------------------- */
+.sidebar{position:fixed;inset:0 auto 0 0;width:var(--lateral);overflow:hidden;background:var(--painel);border-right:1px solid var(--traco);display:flex;flex-direction:column;padding:34px 12px 14px;z-index:20}
+.brand{display:flex;align-items:center;gap:9px;padding:0 10px;font-family:var(--marca-fonte);font-size:20px;font-weight:600;letter-spacing:-.5px}
+.brand-mark{display:grid;place-items:center;width:27px;height:30px;border:1.4px solid var(--marca);border-radius:7px 7px 7px 2px;transform:rotate(-6deg);color:var(--marca)}
+.brand-mark svg{width:17px;height:17px;transform:rotate(6deg)}
+.brand-dot{color:var(--marca-ponto)}
+.sidebar-scroll{position:relative;flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain}
+.sidebar-scroll.rolada{-webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 14px);mask-image:linear-gradient(to bottom,transparent 0,#000 14px)}
+.side-caption{font-size:var(--t1);font-weight:500;letter-spacing:.5px;color:var(--texto-4);margin:18px 10px 6px}
+.side-caption:first-child{margin-top:2px}
+.side-caption-2{margin:14px 10px 6px}
+#navigation{position:relative;z-index:1}
+/* O indicador que desliza. É o detalhe que mais faz a navegação parecer
+   cuidada — e o único elemento da barra lateral que sobrevive ao re-render. */
+.nav-indicador{position:absolute;left:0;right:0;top:0;height:0;border-radius:var(--r1);background:var(--marca-eco);opacity:0;pointer-events:none;z-index:0;transition:transform var(--calmo) var(--curva),height var(--calmo) var(--curva),opacity var(--medio)}
+.nav-indicador.visivel{opacity:1}
+.nav-item{position:relative;width:100%;display:flex;align-items:center;gap:10px;text-align:left;border-radius:var(--r1);padding:7px 10px;font-size:var(--t3);font-weight:450;margin:1px 0;line-height:1.4;min-height:34px;color:var(--texto-2)}
+.nav-item svg{width:16px;height:16px;color:var(--texto-4);transition:color var(--rapido)}
+.nav-item:hover:not(:disabled){background:var(--hover)}
+.nav-item.active,.nav-item.active:hover{background:none;color:var(--marca-texto);font-weight:500}
+.nav-item.active svg{color:var(--marca-texto)}
+.nav-item .nav-count{margin-left:auto;color:var(--texto-4);font-size:var(--t1);font-variant-numeric:tabular-nums}
+/* No alto contraste do sistema o indicador não pinta: o item ativo volta a
+   carregar o próprio fundo. */
+@media(forced-colors:active){.nav-indicador{display:none}.nav-item.active{background:Highlight;color:HighlightText;forced-color-adjust:none}}
+.nav-divisao{border-top:1px solid var(--traco);margin:14px 10px 0}
+.sidebar-bottom{margin-top:auto;padding-top:18px}
+.profile{display:flex;align-items:center;gap:10px;padding:14px 10px 0;font-size:var(--t3);color:var(--texto-2)}
+.avatar{width:28px;height:28px;object-fit:cover;border-radius:50%;background:var(--marca-eco)}
+.profile small{display:block;color:var(--texto-4);font-size:var(--t1)}
+
+/* --- barra superior ------------------------------------------------------- */
+.main{margin-left:var(--lateral)}
+.topbar{position:sticky;top:0;z-index:15;height:62px;display:flex;align-items:center;justify-content:space-between;padding:0 32px;gap:16px;background:var(--topo);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid transparent;box-shadow:none;transition:border-color var(--medio),box-shadow var(--medio)}
+.rolado .topbar{border-bottom-color:var(--traco);box-shadow:var(--sombra-1)}
+.breadcrumb{font-size:var(--t2);color:var(--texto-4);display:flex;align-items:center;gap:13px}
+.breadcrumb svg{width:13px;height:13px}
+.breadcrumb strong{color:var(--texto);font-weight:550;font-size:var(--t3)}
+.top-actions{display:flex;align-items:center;gap:12px}
+.save-status{font-size:var(--t1);color:var(--texto-4);display:flex;align-items:center;gap:6px;max-width:220px}
+.save-status svg{width:15px;height:15px}
+/* O visto que se desenha ao terminar de salvar. */
+#themeToggle svg{animation:trocar-tema var(--calmo) var(--curva)}
+@keyframes trocar-tema{from{opacity:0;transform:rotate(-70deg) scale(.7)}to{opacity:1;transform:none}}
+.save-status.confirmando svg path{stroke-dasharray:80;stroke-dashoffset:80;animation:tracar 620ms var(--curva) forwards}
+.doc-switch-btn{display:flex;align-items:center;gap:6px;padding:5px 8px;border-radius:var(--r1);min-height:auto}
+.doc-switch-btn[disabled]{opacity:1;cursor:default}
+.doc-switch-btn[disabled]:hover{background:none}
+.doc-switch-chevron{transition:transform var(--medio) var(--curva)}
+.doc-switch-btn[aria-expanded="true"] .doc-switch-chevron{transform:rotate(180deg)}
+
+/* --- botões e menus ------------------------------------------------------- */
+.btn{min-height:40px;padding:10px 16px;border-radius:var(--r2);display:inline-flex;align-items:center;justify-content:center;gap:8px;font-size:var(--t2);font-weight:500;line-height:1.4;border:1px solid var(--traco);background:var(--carta);color:var(--texto-2)}
+.btn:hover:not(:disabled){background:var(--hover);border-color:var(--traco-3)}
+.btn.primary{background:var(--primaria);color:var(--primaria-texto);border-color:var(--primaria)}
+.btn.primary:hover:not(:disabled){background:var(--primaria-hover);border-color:var(--primaria-hover);box-shadow:var(--sombra-2)}
+.btn-perigo{color:var(--perigo);border-color:var(--perigo-traco)}
+.btn-perigo:hover:not(:disabled){background:var(--perigo-eco);border-color:var(--perigo)}
+.icon-btn{display:inline-grid;place-items:center;min-width:32px;min-height:32px;border-radius:var(--r1);padding:6px;flex-shrink:0;color:var(--texto-3)}
+.icon-btn svg{width:16px;height:16px}
+.text-button{color:var(--marca);padding:0;background:none;font-size:var(--t1);text-decoration:underline;text-underline-offset:3px}
+.text-button:hover{background:none;color:var(--texto)}
+.more-wrap{position:relative}
+.menu{position:absolute;right:0;top:48px;width:240px;background:var(--carta);border:1px solid var(--traco);padding:6px;box-shadow:var(--sombra-2);border-radius:var(--r3);z-index:40;transform-origin:top right}
+.menu:not([hidden]){animation:menu-entra var(--medio) var(--curva)}
+.menu button{width:100%;padding:11px 10px;text-align:left;font-size:var(--t2);border-radius:var(--r1);display:flex;gap:10px;align-items:center;color:var(--texto-2)}
+.menu button svg{color:var(--texto-4)}
+.menu hr{border:0;border-top:1px solid var(--traco-2);margin:5px}
+.doc-switch{position:relative}
+.doc-switch-menu{position:fixed;right:auto;width:260px;max-height:70vh;overflow-y:auto;transform-origin:top left;z-index:60}
+.menu-doc svg{visibility:hidden;width:15px;height:15px;color:var(--marca)}
+.menu-doc.ativo svg{visibility:visible}
+.menu-doc.ativo{color:var(--marca-texto);font-weight:500}
+.menu-doc-excluir{color:var(--perigo)}
+
+/* --- cabeçalho da página -------------------------------------------------- */
+
+/* --- área de trabalho e editor -------------------------------------------- */
+.workspace{padding:24px 32px 40px;display:grid;grid-template-columns:minmax(325px,.9fr) minmax(350px,1.15fr);gap:36px;align-items:start}
+.editor{background:none;border:0;border-radius:0;box-shadow:none;overflow:visible;min-width:0}
+.editor-header{padding:0 0 18px;border-bottom:1px solid var(--traco-2)}
+.editor-heading{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.editor-heading h2{font-size:var(--t4);font-weight:600;letter-spacing:-.5px}
+.section-number{font-size:var(--t1);color:var(--texto-4);font-variant-numeric:tabular-nums}
+.editor-description{font-size:var(--t3);color:var(--texto-3);line-height:1.6;margin-top:6px}
+.editor-body{padding:20px 0 0}
+.editor-foot{padding:18px 0 0;margin-top:26px;border-top:1px solid var(--traco-2);display:flex;align-items:center;justify-content:space-between;gap:12px}
+.editor-foot span{font-size:var(--t1);color:var(--texto-4)}
+.editor-foot .btn{min-height:34px;padding:8px 12px;font-size:var(--t1)}
+.editor-tip{display:flex;gap:9px;background:var(--repouso);color:var(--texto-3);padding:12px;border-radius:var(--r2);font-size:var(--t1);line-height:1.6;margin-top:5px}
+.editor-tip svg{width:15px;height:15px;margin-top:2px;color:var(--texto-4)}
+/* A entrada do editor ao trocar de seção: cabeçalho e corpo sobem juntos,
+   escalonados. Disparada por JS, porque o texto persiste entre renders. */
+.entra{animation:subir var(--calmo) var(--curva) both}
+
+/* --- foto e campos -------------------------------------------------------- */
+.photo-row{display:flex;align-items:center;gap:16px;padding-bottom:23px;margin-bottom:22px;border-bottom:1px solid var(--traco-2)}
+.photo-editor{width:64px;height:64px;border-radius:var(--r3);object-fit:cover;background:var(--marca-eco)}
+.photo-info{flex:1}
+.photo-info strong{display:block;font-size:var(--t2);font-weight:500;margin-bottom:7px}
+.photo-links{display:flex;align-items:center;gap:12px}
+.photo-caption{font-size:var(--t1);color:var(--texto-4);margin-top:6px}
+.field{display:flex;flex-direction:column;gap:7px;margin-bottom:17px;min-width:0}
+.field label{font-size:var(--t2);font-weight:500;color:var(--texto-2)}
+.field input,.field textarea,.field select{width:100%;border:1px solid var(--campo-traco);border-radius:var(--r1);background:var(--campo);color:var(--texto);padding:10px 12px;font-size:var(--t3);line-height:1.5;outline:none;transition:border-color var(--rapido),box-shadow var(--rapido),background var(--rapido);min-width:0}
+.field input:hover,.field textarea:hover{border-color:var(--traco-3)}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--foco);box-shadow:0 0 0 3px var(--marca-eco)}
+.field input::placeholder,.field textarea::placeholder{color:var(--texto-4)}
+.field textarea{resize:vertical;min-height:86px}
+.field .hint{font-size:var(--t1);color:var(--texto-4);line-height:1.6}
+.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+.contact-field{display:flex;gap:5px;align-items:center}
+.contact-field input{flex:1}
+.subhead{font-size:var(--t2);color:var(--texto-2);margin-bottom:8px;font-weight:500}
+
+/* --- cartões de experiência ----------------------------------------------- */
+.entry-card{border:1px solid var(--traco);border-radius:var(--r2);margin-bottom:14px;overflow:hidden;background:var(--carta)}
+.entry-summary{display:flex;align-items:center;gap:3px;padding:10px;background:var(--carta-2);transition:background var(--rapido)}
+.entry-card:hover .entry-summary{background:var(--hover)}
+.entry-toggle{display:flex;align-items:center;gap:9px;flex:1;text-align:left;min-width:0;padding:3px 2px;font-size:var(--t2)}
+.entry-toggle:hover{background:none}
+.entry-toggle>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.entry-toggle small{display:block;color:var(--texto-4);font-size:var(--t1);font-weight:400}
+.entry-toggle svg{width:14px;height:14px;color:var(--texto-3)}
+/* Abrir e fechar sem salto: a linha do grid vai de 0fr a 1fr. Onde o WebView
+   é antigo demais para interpolar, degrada para o corte seco de hoje. */
+.entry-content{display:grid;grid-template-rows:1fr;transition:grid-template-rows var(--calmo) var(--curva)}
+.entry-content-inner{overflow:hidden;padding:16px 15px 4px;transition:opacity var(--medio) var(--curva)}
+.entry-card.abrindo .entry-content,.entry-card.recolhendo .entry-content{grid-template-rows:0fr}
+.entry-card.abrindo .entry-content-inner,.entry-card.recolhendo .entry-content-inner{opacity:0}
+.entry-content .field-grid{grid-template-columns:1fr}
+.entry-actions{display:flex;align-items:center}
+.entry-actions .icon-btn{min-width:27px;min-height:29px;padding:4px}
+.entry-actions .icon-btn svg{width:14px;height:14px}
+.bullet-row{display:flex;align-items:start;gap:4px;margin-bottom:8px}
+.bullet-row textarea{flex:1;min-height:74px}
+.bullet-row button{margin-top:6px}
+.add-button{width:100%;display:flex;align-items:center;justify-content:center;gap:8px;border:1px dashed var(--traco-3);border-radius:var(--r2);color:var(--marca);font-size:var(--t1);min-height:41px;background:var(--carta-2);margin:8px 0}
+.add-button:hover{background:var(--marca-eco-2);border-color:var(--marca)}
+.section-tools{border-top:1px solid var(--traco);display:flex;gap:7px;margin-top:24px;padding-top:18px;align-items:center}
+.section-tools .text-button{margin-left:auto;color:var(--perigo)}
+
+/* --- prévia e folha A4 ---------------------------------------------------- */
+.preview-area{min-width:0;position:sticky;top:18px}
+.preview-heading{display:flex;align-items:center;justify-content:space-between;padding:0 1px 15px;gap:12px;font-size:var(--t1);color:var(--texto-3)}
+.preview-heading strong{display:flex;gap:8px;align-items:center;font-weight:500}
+.preview-heading strong svg{width:15px;height:15px;color:var(--texto-4)}
+.preview-actions{display:flex;align-items:center;gap:7px}
+.paper-frame{position:relative;margin:0 auto;overflow:hidden;border-radius:2px;box-shadow:var(--papel-sombra);background:#fff;border:1px solid var(--papel-traco)}
+.paper{width:210mm;min-height:297mm;padding:14mm 16mm;background:#fff;color:#222;transform-origin:top left;font-family:var(--cv-font,Georgia,'Times New Roman',serif)}
+.cv{font-size:var(--base);line-height:1.34;overflow-wrap:anywhere}
+.cv-header{display:flex;align-items:center;gap:7mm;padding-bottom:12px;border-bottom:1.5px solid #3e4a40;margin-bottom:12px}
+.cv-header-text{flex:1;min-width:0}
+.cv-name{font-size:1.82em;line-height:1.16;letter-spacing:.025em;text-transform:uppercase;margin:0 0 6px;font-weight:700}
+.cv-subtitle{font-style:italic;font-size:.97em;color:#4f554f;margin-bottom:6px}
+.cv-contact{font-size:.84em;line-height:1.6}
+.cv-contact span{display:inline}
+.cv-photo{width:25mm;height:30mm;object-fit:cover;flex:none;border-radius:1px}
+.cv-section{margin-bottom:9px}
+.cv-section h2{font-size:.96em;letter-spacing:.12em;text-transform:uppercase;border-bottom:.65px solid #80867e;padding-bottom:3px;margin-bottom:4px;font-weight:700;break-after:avoid}
+.cv-section p{margin:0}
+.cv-entry{margin-bottom:6px;break-inside:avoid}
+.cv-entry:last-child{margin-bottom:0}
+.cv-org{font-weight:700}
+.cv-period{font-size:.92em;color:#535853}
+.cv-position{font-style:italic;font-size:.96em}
+.cv-entry ul{margin:2px 0 0;padding-left:1.1em}
+.cv-entry li{padding-left:1px}
+.preview-foot{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:17px 1px 0;font-size:var(--t1);color:var(--texto-4)}
+.page-status{display:flex;gap:6px;align-items:center}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--ponto-ok);flex:none;transition:background var(--medio)}
+.page-status.warning{color:var(--aviso)}
+.page-status.warning .dot{background:var(--aviso-ponto)}
+.progress-track{height:3px;width:64px;background:var(--traco);border-radius:3px;overflow:hidden}
+.progress-track span{display:block;height:100%;background:var(--barra);transition:width var(--calmo) var(--curva),background var(--medio)}
+.page-note{font-size:var(--t1);color:var(--texto-4);line-height:1.6;margin-top:12px}
+
+/* --- aparência: cartões, segmentado, chave, lista de fontes --------------- */
+.appearance-option{padding:16px;border:1px solid var(--traco);border-radius:var(--r2);margin-bottom:14px}
+.appearance-option h3{font-size:var(--t2);font-weight:500;margin-bottom:4px}
+.appearance-option p{font-size:var(--t1);color:var(--texto-3);margin-bottom:12px}
+.segmented,.mobile-tabs{position:relative;display:flex;gap:4px;background:var(--repouso);padding:4px;border-radius:var(--r2)}
+/* A pastilha desliza em vez de saltar de um botão para o outro. */
+.segmented-pill{position:absolute;top:4px;bottom:4px;left:4px;width:calc((100% - 8px - (var(--n) - 1)*4px)/var(--n));border-radius:var(--r1);background:var(--pastilha);box-shadow:var(--sombra-1);transform:translateX(calc(var(--i,0)*(100% + 4px)));transition:transform var(--calmo) var(--curva);pointer-events:none}
+.segmented button,.mobile-tabs button{position:relative;flex:1;font-size:var(--t1);padding:9px 5px;border-radius:var(--r1);color:var(--texto-3)}
+.segmented button:hover,.mobile-tabs button:hover{background:none;color:var(--texto)}
+.segmented button.selected,.mobile-tabs button.selected{background:none;color:var(--marca-texto);font-weight:500}
+.toggle-row{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.switch{width:35px;height:21px;border-radius:20px;background:var(--traco-3);padding:3px;flex-shrink:0;transition:background var(--medio) var(--curva)}
+.switch[aria-checked=true]{background:var(--primaria)}
+.switch::after{content:'';display:block;width:15px;height:15px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.18);transition:transform var(--medio) cubic-bezier(.34,1.4,.64,1)}
+.switch[aria-checked=true]::after{transform:translateX(14px)}
+.font-list{border:1px solid var(--traco);border-radius:var(--r2);background:var(--carta);max-height:268px;overflow-y:auto;overscroll-behavior:contain}
+.font-row{width:100%;display:grid;grid-template-columns:minmax(0,1fr) 18px;align-items:center;gap:0 10px;padding:10px 13px;text-align:left;border-bottom:1px solid var(--traco-2);border-radius:0}
+.font-row:last-child{border-bottom:0}
+.font-row:hover{background:var(--hover)}
+.font-row.selected,.font-row.selected:hover{background:var(--marca-eco-2)}
+.font-row-sample{grid-column:1;grid-row:1;display:block;font-size:17px;line-height:1.35;color:var(--texto);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.font-row-meta{grid-column:1;grid-row:2;display:block;font-size:var(--t1);color:var(--texto-4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.font-row-check{grid-column:2;grid-row:1 / span 2;color:var(--marca);opacity:0;display:grid;place-items:center;transition:opacity var(--rapido)}
+.font-row.selected .font-row-check{opacity:1}
+.font-row-check svg{width:16px;height:16px}
+.template-note{display:flex;align-items:center;gap:9px;font-size:var(--t1);color:var(--texto-4);margin-top:2px}
+.template-note svg{width:15px;height:15px;color:var(--texto-4)}
+
+/* --- diálogo e aviso ------------------------------------------------------ */
+dialog{border:1px solid var(--traco);border-radius:var(--r4);padding:0;width:min(480px,calc(100vw - 32px));max-height:85vh;background:var(--carta);color:var(--texto);box-shadow:var(--sombra-3)}
+dialog[open]{animation:dialogo-entra var(--calmo) var(--curva)}
+dialog::backdrop{background:var(--fundo-modal);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+dialog[open]::backdrop{animation:esmaecer var(--calmo) ease}
+/* Onde o WebView sabe animar `display`, o diálogo também sai animando. */
+@supports (transition-behavior:allow-discrete){
+ dialog{opacity:0;transform:translateY(8px) scale(.98);transition:opacity var(--medio) var(--curva-saida),transform var(--medio) var(--curva-saida),overlay var(--medio) allow-discrete,display var(--medio) allow-discrete}
+ dialog[open]{opacity:1;transform:none;animation:none}
+ dialog::backdrop{opacity:0;transition:opacity var(--medio) ease,overlay var(--medio) allow-discrete,display var(--medio) allow-discrete}
+ dialog[open]::backdrop{opacity:1;animation:none}
+ @starting-style{dialog[open]{opacity:0;transform:translateY(8px) scale(.98)}dialog[open]::backdrop{opacity:0}}
+}
+.dialog-header{padding:23px 25px 15px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.dialog-header h2{font-size:var(--t4);font-weight:500;letter-spacing:-.4px}
+.dialog-body{padding:0 25px 25px;font-size:var(--t3);line-height:1.7;color:var(--texto-3)}
+.dialog-body p{margin-bottom:15px}
+.dialog-body .btn{width:100%;margin-top:12px}
+.dialog-body pre{white-space:pre-wrap;font:var(--t3)/1.6 Georgia,serif;background:var(--repouso);padding:16px;border-radius:var(--r1);color:var(--texto-2);max-height:45vh;overflow:auto}
+.export-summary{background:var(--repouso);padding:16px;border-radius:var(--r2);display:flex;gap:13px;align-items:center;margin-bottom:20px}
+.export-summary svg{width:29px;height:29px;color:var(--marca)}
+.export-summary strong{display:block;color:var(--texto);font-size:var(--t2);font-weight:500}
+.export-summary span{font-size:var(--t1)}
+.steps{padding-left:21px;margin:0}
+.steps li{padding:5px 0 5px 4px}
+.toast{position:fixed;bottom:25px;left:calc(50% + var(--lateral)/2);transform:translateX(-50%);background:var(--toast-fundo);color:var(--toast-texto);padding:12px 17px;border-radius:var(--r2);box-shadow:var(--sombra-3);z-index:100;display:flex;align-items:center;gap:20px;font-size:var(--t2);max-width:calc(100vw - 30px)}
+.toast:not([hidden]){animation:toast-entra var(--calmo) var(--curva)}
+.toast.saindo{animation:toast-sai var(--medio) var(--curva-saida) forwards}
+.toast button{color:inherit;text-decoration:underline;font-size:var(--t2);white-space:nowrap}
+.toast button:hover:not(:disabled){background:var(--toast-hover)}
+
+/* --- páginas de texto (Sobre, Conectar sua IA) ---------------------------- */
+.about-hero{font-size:var(--t3);line-height:1.75;color:var(--texto-3);margin-bottom:22px}
+.about-hero p+p{margin-top:11px}
+.about-card-head{display:flex;align-items:center;gap:9px;margin-bottom:7px}
+.about-card-head svg{width:16px;height:16px;color:var(--marca)}
+.about-card p{margin-bottom:0}
+.about-link{font-size:var(--t1);color:var(--texto-3);margin-top:11px;word-break:break-word}
+.about-link a{color:var(--marca)}
+.comando-rotulo{font-size:var(--t1);font-weight:500;color:var(--texto-2);margin-top:14px}
+.exemplos-ia{margin:10px 0 0;padding-left:18px;font-size:var(--t2);line-height:1.8;color:var(--texto-3)}
+.exemplos-ia li{padding:1px 0}
+.about-comando{font:var(--t2)/1.6 ui-monospace,'SF Mono',Menlo,monospace;background:var(--repouso);border:1px solid var(--traco);color:var(--texto-2);padding:10px 12px;border-radius:var(--r1);margin:12px 0 8px;white-space:pre-wrap;word-break:break-word;-webkit-user-select:text;user-select:text}
+
+/* --- modos de tela -------------------------------------------------------- */
+.mobile-tabs{display:none}
+.mobile-menu{display:none}
+.preview-mode .workspace{display:block;max-width:850px;margin:auto}
+.preview-mode .editor{display:none}
+.preview-mode .preview-area{max-width:650px;margin:auto}
+.info-mode .workspace{display:block;max-width:760px;margin:0 auto}
+.info-mode .preview-area,.info-mode .mobile-tabs{display:none}
+
+/* --- aplicativo instalado ------------------------------------------------- */
+.desktop-app .topbar,.desktop-app .sidebar{-webkit-user-select:none;user-select:none}
+.app-nativo,.app-nativo body{height:100%;overflow:hidden}
+.app-nativo .main{height:100vh;overflow-y:auto;overscroll-behavior:none}
+.app-nativo .sidebar{overscroll-behavior:contain}
+.mac-overlay .sidebar{padding-top:64px}
+.mac-overlay .sidebar.open{padding-top:20px}
+.abertura{position:fixed;inset:0;z-index:200;background:var(--tela);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;pointer-events:none;transition:opacity .34s ease}
+.abertura.saindo{opacity:0}
+.abertura-marca{--giro:-6deg;display:grid;place-items:center;width:56px;height:63px;border:1.8px solid var(--marca);border-radius:15px 15px 15px 3px;transform:rotate(-6deg);color:var(--marca);animation:surge .42s var(--curva) both}
+.abertura-marca svg{width:34px;height:34px;transform:rotate(6deg)}
+.abertura-nome{font-family:var(--marca-fonte);font-size:34px;font-weight:600;letter-spacing:-2px;color:var(--texto);animation:surge .42s var(--curva) .08s both}
+.abertura-nome span{color:var(--marca-ponto)}
+.abertura p{font-size:var(--t3);color:var(--texto-3);animation:surge .5s ease .22s both}
+
+/* --- barras de rolagem, no estilo do macOS -------------------------------- */
+::-webkit-scrollbar{width:11px;height:11px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-button{display:none}
+::-webkit-scrollbar-corner{background:transparent}
+::-webkit-scrollbar-thumb{background-color:var(--rolagem);border-radius:10px;border:3.5px solid transparent;background-clip:content-box;min-height:38px}
+::-webkit-scrollbar-thumb:hover{background-color:var(--rolagem-viva)}
+html{scrollbar-width:thin;scrollbar-color:var(--rolagem) transparent}
+.sidebar-scroll::-webkit-scrollbar{width:9px}
+.sidebar-scroll::-webkit-scrollbar-thumb{background-color:transparent;border-width:2.5px}
+.sidebar-scroll:hover::-webkit-scrollbar-thumb{background-color:var(--rolagem)}
+
+/* --- movimento ------------------------------------------------------------ */
+@keyframes subir{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes menu-entra{from{opacity:0;transform:translateY(-4px) scale(.96)}to{opacity:1;transform:none}}
+@keyframes dialogo-entra{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:none}}
+@keyframes esmaecer{from{opacity:0}to{opacity:1}}
+@keyframes toast-entra{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%)}}
+@keyframes toast-sai{from{opacity:1;transform:translateX(-50%)}to{opacity:0;transform:translateX(-50%) translateY(8px)}}
+@keyframes tracar{from{stroke-dashoffset:80}to{stroke-dashoffset:0}}
+@keyframes surge{from{opacity:0;transform:translateY(7px) scale(.97) rotate(var(--giro,0deg))}to{opacity:1;transform:translateY(0) scale(1) rotate(var(--giro,0deg))}}
+/* Nada aqui é necessário para entender a interface. Quem pede menos movimento
+   recebe o mesmo aplicativo, parado. */
+@media(prefers-reduced-motion:reduce){
+ *,*::before,*::after{animation-duration:.01ms!important;animation-delay:0ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;transition-delay:0ms!important;scroll-behavior:auto!important}
+}
+
+/* --- respiro por tamanho de tela ------------------------------------------ */
+@media(max-height:820px) and (min-width:641px){
+ .sidebar{padding-top:25px}
+}
+@media(min-width:1600px){
+ :root{--lateral:248px}
+ .workspace{grid-template-columns:440px minmax(400px,620px);justify-content:center;gap:46px}
+ .topbar{padding-right:50px}
+}
+@media(max-width:1180px){
+ :root{--lateral:196px}
+ .sidebar{padding-left:13px;padding-right:13px}
+ .topbar{padding:0 25px}
+ .workspace{padding:24px 24px 30px;gap:26px;grid-template-columns:minmax(290px,1fr) minmax(290px,1fr)}
+ .save-status{display:none}
+ .field-grid{grid-template-columns:1fr}
+ .nav-item{padding-left:10px;padding-right:10px}
+}
+@media(max-width:940px){
+ .workspace{grid-template-columns:1fr;max-width:650px;margin:auto}
+ .preview-area{position:static;display:none}
+ .editor{display:block}
+ .mobile-tabs{display:flex;margin:0 32px}
+ .mobile-preview .editor{display:none}
+ .mobile-preview .preview-area{display:block}
+ .preview-mode .preview-area{display:block}
+ .field-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:640px){
+ :root{--lateral:0px}
+ .sidebar{display:none;width:240px;box-shadow:var(--sombra-3);top:65px;padding-top:20px}
+ .sidebar.open{display:flex}
+ .sidebar .brand{display:none}
+ .side-caption{margin-top:12px}
+ .topbar{height:56px;padding:0 18px;gap:6px}
+ .breadcrumb{gap:9px}
+ .breadcrumb>span,.breadcrumb>svg{display:none}
+ .mobile-menu{display:inline-grid}
+ .top-actions{gap:5px}
+ .top-actions .btn{font-size:var(--t1);padding:9px 11px;min-height:36px}
+ .mobile-tabs{margin:18px 18px 0;width:calc(100% - 36px)}
+ .mobile-tabs button{flex:1}
+ .workspace{padding:18px 18px 25px}
+ .editor-heading h2{font-size:17px}
+ .field-grid{grid-template-columns:1fr}
+ .field input,.field textarea,.field select{font-size:16px}
+ .entry-actions .icon-btn,.icon-btn{min-width:40px;min-height:40px}
+ .toast{left:50%;bottom:16px}
+ .paper-frame{max-width:100%}
+}
+
+/* --- impressão: a folha sai igual nos dois temas -------------------------- */
+@page{size:A4;margin:14mm 16mm}
+@media print{
+ :root{color-scheme:light}
+ body{background:#fff}
+ .sidebar,.topbar,.editor,.preview-heading,.preview-foot,.page-note,.toast,dialog,.abertura{display:none!important}
+ .main{margin:0}
+ .workspace,.preview-mode .workspace{display:block;margin:0;padding:0;max-width:none}
+ .preview-area,.mobile-preview .preview-area{display:block;position:static;max-width:none!important}
+ .paper-frame{height:auto!important;width:auto!important;overflow:visible;border:0;border-radius:0;box-shadow:none}
+ .paper{transform:none!important;width:auto;min-height:0;padding:0}
+ .cv{color:#171717}
+ .cv-section{break-inside:auto}
+ .cv-section h2{break-after:avoid}
+ .cv-entry,.cv-header{break-inside:avoid}
+ .app-nativo,.app-nativo body{height:auto;overflow:visible}
+ .app-nativo .main{height:auto;overflow:visible}
+}
+</style>
+<script>
+// O tema precisa estar resolvido antes da primeira pintura, senão a janela pisca
+// clara antes do CSS escuro entrar. A preferência ("sistema") vira sempre um tema
+// concreto no atributo, para a folha de estilo ter um só bloco escuro.
+(function(){try{
+ var p=localStorage.getItem('folium-tema');
+ if(p!=='claro'&&p!=='escuro')p='sistema';
+ var escuro=p==='escuro'||(p==='sistema'&&matchMedia('(prefers-color-scheme: dark)').matches);
+ document.documentElement.dataset.tema=escuro?'escuro':'claro';
+ window.__foliumTema=p;
+ document.querySelector('meta[name=theme-color]').setAttribute('content',escuro?'#0d0f0e':'#fafafa');
+}catch(e){}})();
+</script>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar" id="sidebar" aria-label="Seções do currículo" data-tauri-drag-region>
+ <div class="brand"><span class="brand-mark" data-icon="folium"></span><span>folium<span class="brand-dot">.</span></span></div>
+ <div class="sidebar-scroll">
+  <div class="nav-indicador" id="navIndicador" aria-hidden="true"></div>
+  <div class="side-caption">SEU CURRÍCULO</div>
+  <nav id="navigation" aria-label="Editar currículo"></nav>
+  </div>
+ <div class="sidebar-bottom"><div class="profile"><img class="avatar" id="profilePhoto" alt=""><div><span id="profileName">Seu currículo</span><small>Seu espaço pessoal</small></div></div></div>
+</aside>
+<main class="main">
+ <header class="topbar" data-tauri-drag-region="deep"><div class="breadcrumb"><button class="icon-btn mobile-menu" id="mobileMenu" aria-label="Abrir seções" aria-expanded="false"><span data-icon="menu"></span></button><div class="doc-switch"><button class="doc-switch-btn" id="docSwitchButton" aria-haspopup="true" aria-expanded="false" aria-controls="docSwitchMenu"><strong id="docTitle">Meu currículo</strong><span class="doc-switch-chevron" data-icon="chevronDown"></span></button></div></div><div class="top-actions"><span class="save-status" id="saveStatus" role="status"><span data-icon="checkCloud"></span><span id="saveText">Salvo neste navegador</span></span><button class="icon-btn" id="themeToggle" aria-label="Alternar tema"><span data-icon="lua"></span></button><div class="more-wrap"><button class="icon-btn" id="moreButton" aria-label="Mais opções" aria-expanded="false" aria-controls="moreMenu"><span data-icon="more"></span></button><div class="menu" id="moreMenu" hidden><button id="downloadHTML"><span data-icon="download"></span>Salvar cópia editável</button><button id="downloadJSON"><span data-icon="archive"></span>Guardar backup</button><button id="importJSON"><span data-icon="upload"></span>Abrir backup</button><hr><button id="readText"><span data-icon="align"></span>Conferir texto do currículo</button><button id="help"><span data-icon="help"></span>Como usar</button></div></div><button class="btn primary" id="exportPDF"><span data-icon="download"></span>Exportar PDF</button></div></header>
+ <div class="mobile-tabs" style="--n:2"><span class="segmented-pill" id="tabPill" style="--i:0"></span><button id="tabEdit" class="selected">Editar</button><button id="tabPreview">Ver currículo</button></div>
+ <div class="workspace"><section class="editor" aria-labelledby="editorTitle"><div class="editor-header"><div class="editor-heading"><h2 id="editorTitle"></h2><span class="section-number" id="sectionNumber"></span></div><p class="editor-description" id="editorDescription"></p></div><div class="editor-body" id="editorBody"></div><div class="editor-foot"><span>As alterações aparecem na prévia.</span><button class="btn" id="nextSection">Próxima seção <span data-icon="arrowRight"></span></button></div></section>
+ <section class="preview-area" aria-label="Prévia do currículo"><div class="preview-heading"><strong><span data-icon="eye"></span>Prévia do currículo</strong><div class="preview-actions"><span id="pageLabel">A4 · 1 página</span><button class="icon-btn" id="expandPreview" aria-label="Ampliar prévia" aria-pressed="false"><span data-icon="expand"></span></button></div></div><div class="paper-frame" id="paperFrame"><article class="paper" id="paper"><div class="cv" id="cv"></div></article></div><div class="preview-foot"><div class="page-status" id="pageStatus"><span class="dot"></span><span id="pageMessage">Seu currículo cabe em uma página</span></div><div class="progress-track" aria-hidden="true"><span id="pageProgress"></span></div></div><p class="page-note" id="pageNote" hidden>O conteúdo passou de uma página. Enxugue os textos ou escolha o espaçamento compacto em Aparência. A paginação final aparece na impressão.</p></section></div>
+</main>
+</div>
+<input type="file" id="photoInput" accept="image/jpeg,image/png,image/webp" hidden>
+<input type="file" id="backupInput" accept=".json,application/json" hidden>
+<dialog id="dialog" aria-labelledby="dialogTitle"><div class="dialog-header"><h2 id="dialogTitle"></h2><button class="icon-btn" id="closeDialog" aria-label="Fechar janela"><span data-icon="close"></span></button></div><div class="dialog-body" id="dialogBody"></div></dialog>
+<div class="abertura" id="abertura" aria-hidden="true" hidden><div class="abertura-marca" data-icon="folium"></div><div class="abertura-nome">folium<span>.</span></div><p>Seu currículo, do seu jeito.</p></div>
+<div class="menu doc-switch-menu" id="docSwitchMenu" hidden></div>
+<div class="toast" id="toast" role="status" hidden><span id="toastText"></span><button id="undoButton" hidden>Desfazer</button></div>
+<script id="embedded-data" type="application/json">null</script>
+<script>
+(async function initializeFolium(){
+const desktop = window.FoliumDesktop;
+const AVATAR_PADRAO = "data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23eceeed'/%3E%3Cg fill='none' stroke='%239aa39d' stroke-width='3.4' stroke-linecap='round'%3E%3Ccircle cx='32' cy='25' r='9'/%3E%3Cpath d='M14 52a18 18 0 0 1 36 0'/%3E%3C/g%3E%3C/svg%3E";
+
+// Catálogo de fontes. As marcadas com `sempre` existem no macOS e no Windows; as demais só
+// aparecem para quem as tem instaladas — inclusive uma que quase ninguém vai ver.
+const FONTES = [
+  { chave:'georgia',   rotulo:'Clássica',    nota:'Georgia',         sempre:true, pilha:"Georgia,'Times New Roman',serif" },
+  { chave:'times',     rotulo:'Tradicional', nota:'Times New Roman', sempre:true, pilha:"'Times New Roman',Times,serif" },
+  { chave:'palatino',  rotulo:'Elegante',    nota:'Palatino',        sempre:true, pilha:"Palatino,'Palatino Linotype','Book Antiqua',Georgia,serif" },
+  { chave:'helvetica', rotulo:'Moderna',     nota:'Helvetica',       sempre:true, pilha:"'Helvetica Neue',Helvetica,Arial,sans-serif" },
+  { chave:'tahoma',    rotulo:'Objetiva',    nota:'Tahoma',          sempre:true, pilha:"Tahoma,Verdana,sans-serif" },
+  { chave:'courier',   rotulo:'Datilografada', nota:'Courier New',   sempre:true, pilha:"'Courier New',Courier,monospace" },
+  { chave:'garamond',  rotulo:'Refinada',    nota:'Garamond',        teste:'Garamond',    pilha:"Garamond,'EB Garamond',Georgia,serif" },
+  { chave:'charter',   rotulo:'Editorial',   nota:'Charter',         teste:'Charter',     pilha:"Charter,'Bitstream Charter',Georgia,serif" },
+  { chave:'baskerville',rotulo:'Literária',  nota:'Baskerville',     teste:'Baskerville', pilha:"Baskerville,'Libre Baskerville',Georgia,serif" },
+  { chave:'iowan',     rotulo:'Serena',      nota:'Iowan Old Style', teste:'Iowan Old Style', pilha:"'Iowan Old Style',Georgia,serif" },
+  { chave:'cambria',   rotulo:'Sóbria',      nota:'Cambria',         teste:'Cambria',     pilha:"Cambria,Georgia,serif" },
+  { chave:'avenir',    rotulo:'Suave',       nota:'Avenir Next',     teste:'Avenir Next', pilha:"'Avenir Next',Avenir,sans-serif" },
+  { chave:'calibri',   rotulo:'Corporativa', nota:'Calibri',         teste:'Calibri',     pilha:"Calibri,'Segoe UI',sans-serif" },
+  { chave:'jetbrains', rotulo:'Técnica',     nota:'JetBrains Mono',  teste:'JetBrains Mono', pilha:"'JetBrains Mono','SF Mono',monospace" },
+  { chave:'papermono', rotulo:'Paper Mono',  nota:'Easter egg — você tem essa', teste:'Paper Mono', pilha:"'Paper Mono','SF Mono',monospace" }
+];
+const FONTE_PADRAO = FONTES[0];
+const fontePor = chave => FONTES.find(f => f.chave === chave) || FONTE_PADRAO;
+// Uma fonte está instalada se o texto medido com ela difere do texto medido com a genérica.
+const fonteInstalada = (() => {
+  const ctx = document.createElement('canvas').getContext('2d');
+  const largura = pilha => { ctx.font = '72px ' + pilha; return ctx.measureText('mmmwwwiii0123OQ').width; };
+  const genericas = ['serif','sans-serif','monospace'];
+  const base = genericas.map(largura);
+  return nome => genericas.some((g,i) => largura('"'+nome+'",'+g) !== base[i]);
+})();
+const fontesDisponiveis = () => FONTES.filter(f => f.sempre || fonteInstalada(f.teste));
+
+// Documento inicial: um roteiro em branco. Nenhum dado pessoal acompanha o Folium.
+const PADRAO = {
+  versao: 3,
+  layoutDatas: "inline",
+  densidade: "10.2",
+  fonte: "georgia",
+  foto: "",
+  nome: "",
+  subtitulo: "",
+  contato: ["", "", "", ""],
+  secoes: [
+    {
+      tipo: "texto",
+      titulo: "Perfil",
+      corpo: ""
+    },
+    {
+      tipo: "entradas",
+      titulo: "Experiência Profissional",
+      itens: [
+        { org: "", local: "", cargo: "", periodo: "", topicos: [""] }
+      ]
+    },
+    {
+      tipo: "entradas",
+      titulo: "Formação Acadêmica",
+      itens: [
+        { org: "", local: "", cargo: "", periodo: "", topicos: [] }
+      ]
+    },
+    {
+      tipo: "texto",
+      titulo: "Idiomas",
+      corpo: ""
+    },
+    {
+      tipo: "texto",
+      titulo: "Competências e Ferramentas",
+      corpo: ""
+    }
+  ]
+};
+
+
+'use strict';
+const $ = id => document.getElementById(id);
+const clone = value => JSON.parse(JSON.stringify(value));
+const ICONS = {
+ folium:'M7 20V4h10M7 10h8M7 15h5',user:'M20 21v-2a7 7 0 0 0-14 0v2M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0',
+ align:'M4 5h16M4 10h16M4 15h16M4 20h10',briefcase:'M9 7V4h6v3M3 7h18v13H3zM3 12a23 23 0 0 0 18 0M10 12h4',
+ graduation:'m2 9 10-5 10 5-10 5zM6 12v5c4 3 8 3 12 0v-5M22 9v7',award:'M16 8a4 4 0 1 1-8 0 4 4 0 0 1 8 0M8 12l-2 9 6-3 6 3-2-9',
+ globe:'M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0M3 12h18M12 3c5 5 5 13 0 18-5-5-5-13 0-18',
+ spark:'m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5z',sliders:'M4 7h8m4 0h4M4 17h4m4 0h8M12 4v6M8 14v6',
+ plus:'M12 5v14M5 12h14',leaf:'M20 4C9 2 3 7 5 14c2 7 14 6 15-10ZM5 20l9-10',chevronRight:'m9 6 6 6-6 6',chevronDown:'m6 9 6 6 6-6',
+ checkCloud:'M8 18H6a4 4 0 0 1-1-8 7 7 0 0 1 13-2 5 5 0 0 1 2 9M10 16l3 3 6-6',more:'M5 11a1 1 0 1 0 0 2 1 1 0 0 0 0-2M12 11a1 1 0 1 0 0 2 1 1 0 0 0 0-2M19 11a1 1 0 1 0 0 2 1 1 0 0 0 0-2',
+ download:'M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5',upload:'M12 16V4m-5 5 5-5 5 5M4 16v5h16v-5',archive:'M4 7h16v14H4zM3 3h18v4H3zM9 11h6',
+ help:'M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0M9 9a3 3 0 0 1 6 0c0 2-3 2-3 4M12 17h.01',
+ fileCheck:'M14 2H5v20h14V7zM14 2v6h5M8 15l3 3 5-6',arrowRight:'M4 12h16m-6-6 6 6-6 6',eye:'M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0',
+ expand:'M8 3H3v5M16 3h5v5M21 16v5h-5M8 21H3v-5',close:'m6 6 12 12M6 18 18 6',menu:'M4 6h16M4 12h16M4 18h16',
+ sol:'M12 4V2M12 22v-2M4 12H2M22 12h-2M5.6 5.6 4.2 4.2M19.8 19.8l-1.4-1.4M18.4 5.6l1.4-1.4M4.2 19.8l1.4-1.4M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0',lua:'M20 14A8 8 0 0 1 10 4a8 8 0 1 0 10 10Z',
+ up:'M12 20V4m-6 6 6-6 6 6',down:'M12 4v16m-6-6 6 6 6-6',trash:'M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7M14 10v7',check:'m5 12 4 4L19 6'
+};
+function icon(name){const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 24 24');svg.setAttribute('aria-hidden','true');const path=document.createElementNS(svg.namespaceURI,'path');path.setAttribute('d',ICONS[name]||ICONS.align);svg.append(path);return svg;}
+function node(tag,cls,text){const n=document.createElement(tag);if(cls)n.className=cls;if(text!==undefined)n.textContent=text;return n;}
+function button(text,fn,cls='btn',symbol){const b=node('button',cls);b.type='button';if(symbol)b.append(icon(symbol));if(text)b.append(document.createTextNode(text));b.addEventListener('click',fn);return b;}
+function iconButton(label,symbol,fn){const b=button('',fn,'icon-btn',symbol);b.setAttribute('aria-label',label);b.title=label;return b;}
+document.querySelectorAll('[data-icon]').forEach(n=>n.replaceChildren(icon(n.dataset.icon)));
+const embedded=JSON.parse($('embedded-data').textContent);
+const FOLIUM_VERSAO='0.1.0';
+const FOLIUM_REPO='https://github.com/gabrielrs0uza/folium';
+const COMANDOS_MCP=[
+ ['Claude Code','claude mcp add folium -- npx -y folium-mcp'],
+ ['Claude Desktop, Cursor, VS Code, Windsurf e outros','{ "mcpServers": { "folium": { "command": "npx", "args": ["-y", "folium-mcp"] } } }']
+];
+const CHAVE=embedded?.documentId ? 'cv-folium-'+embedded.documentId : 'cv-folium-v3';
+// Rascunhos guardados pela primeira versão (Folio) continuam sendo abertos.
+const CHAVE_ANTERIOR=embedded?.documentId ? 'cv-folio-'+embedded.documentId : '';
+function validData(d){
+ const str=x=>typeof x==='string'&&x.length<=50000;
+ const image=x=>x===''||(/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(x)&&x.length<6000000);
+ return d&&str(d.nome)&&str(d.subtitulo)&&Array.isArray(d.contato)&&d.contato.length<=30&&d.contato.every(str)&&typeof d.foto==='string'&&image(d.foto)&&Array.isArray(d.secoes)&&d.secoes.length<=40&&d.secoes.every(s=>str(s.titulo)&&((s.tipo==='texto'&&str(s.corpo))||(s.tipo==='entradas'&&Array.isArray(s.itens)&&s.itens.length<=100&&s.itens.every(i=>['org','cargo','local','periodo'].every(k=>str(i[k]))&&Array.isArray(i.topicos)&&i.topicos.length<=100&&i.topicos.every(str)))));
+}
+let storageWarning='';
+let desktopState = null;
+let startupError = null;
+// Só existe mais de um documento no aplicativo instalado; o HTML avulso e a versão no
+// navegador continuam sendo o currículo único de sempre.
+let documentos=[{arquivo:'curriculo.json',nome:'Currículo'}],documentoAtivo='curriculo.json';
+if (desktop) {
+  try { desktopState = await desktop.load(); }
+  catch (error) { startupError = String(error); }
+  try {
+    const estado = await desktop.listDocuments();
+    if (estado?.ativo && Array.isArray(estado.documentos) && estado.documentos.length) {
+      documentoAtivo = estado.ativo;
+      documentos = estado.documentos;
+    }
+  } catch {}
+} else {
+  // Sem o backend, não há vários currículos para trocar — o botão vira só um rótulo.
+  $('docSwitchButton').disabled = true;
+  $('docSwitchButton').querySelector('.doc-switch-chevron').hidden = true;
+}
+
+function load(){if(desktop)return clone(desktopState?.data || (validData(embedded)?embedded:PADRAO));try{const s=localStorage.getItem(CHAVE)||(CHAVE_ANTERIOR&&localStorage.getItem(CHAVE_ANTERIOR));if(s){const d=JSON.parse(s);if(validData(d))return d;storageWarning='Rascunho inválido. Abra um backup.';}}catch{storageWarning='Salvamento indisponível. Guarde uma cópia.';}return clone(validData(embedded)?embedded:PADRAO);}
+// O tema é preferência desta máquina, não do documento: fica fora do JSON do
+// currículo, para o backup e a cópia editável não carregarem o tema de quem os
+// gerou. "sistema" é resolvido para um tema concreto no atributo data-tema.
+const TEMAS=[['Claro','claro'],['Escuro','escuro'],['Sistema','sistema']];
+const CHAVE_TEMA='folium-tema';
+const noiteDoSistema=window.matchMedia('(prefers-color-scheme: dark)');
+let temaPreferido=window.__foliumTema||'sistema';
+function temaResolvido(){return temaPreferido==='sistema'?(noiteDoSistema.matches?'escuro':'claro'):temaPreferido;}
+function aplicarTema(){
+ const escuro=temaResolvido()==='escuro';
+ document.documentElement.dataset.tema=escuro?'escuro':'claro';
+ document.querySelector('meta[name=theme-color]')?.setAttribute('content',escuro?'#0d0f0e':'#fafafa');
+ const botao=$('themeToggle');
+ if(botao){
+  botao.replaceChildren(icon(escuro?'sol':'lua'));
+  const rotulo=escuro?'Mudar para o tema claro':'Mudar para o tema escuro';
+  botao.setAttribute('aria-label',rotulo);botao.title=rotulo;
+ }
+ // A janela nativa acompanha: semáforos, menus e a cor de fundo antes da pintura.
+ if(desktop?.setTheme)desktop.setTheme(temaPreferido).catch(()=>{});
+}
+function definirTema(valor){
+ temaPreferido=valor;
+ try{localStorage.setItem(CHAVE_TEMA,valor);}catch{}
+ aplicarTema();
+}
+noiteDoSistema.addEventListener('change',()=>{if(temaPreferido==='sistema')aplicarTema();});
+// O botão da topbar decide entre claro e escuro; "Sistema" continua em Aparência.
+$('themeToggle').onclick=()=>{
+ definirTema(temaResolvido()==='escuro'?'claro':'escuro');
+ if(active==='appearance')renderEditor();
+};
+let dados=load(),active='personal',openEntry=0,fieldId=0,toastTimer,undoAction=null;
+let animarAbertura=false;
+let saveRevision = 0;
+async function save(){
+  if(startupError)return false;
+  const revision = ++saveRevision;
+  // "Salvando…" só aparece quando a gravação de fato demora. Antes o texto
+  // piscava a cada tecla, o que é ruído, não informação.
+  const demora=setTimeout(()=>{if(revision===saveRevision)$('saveText').textContent='Salvando…';},400);
+  try{
+    if(desktop)await desktop.save(dados);
+    else localStorage.setItem(CHAVE,JSON.stringify(dados));
+    clearTimeout(demora);
+    if(revision===saveRevision){storageWarning='';$('saveText').textContent=desktop?'Salvo neste computador':'Salvo neste navegador';confirmarSalvo();}
+    return true;
+  }catch(error){
+    clearTimeout(demora);
+    if(revision===saveRevision){storageWarning='Não foi possível salvar. Guarde um backup.';$('saveText').textContent=storageWarning;notify(storageWarning);}
+    return false;
+  }
+}
+// Ao terminar de salvar, o ícone se redesenha. É o tipo de detalhe que a pessoa
+// percebe sem saber que percebeu.
+// Espera a digitação parar: durante a escrita cada tecla dispara um save, e um
+// visto piscando a cada letra vira ruído.
+let temporizadorVisto,agendaVisto;
+function confirmarSalvo(){
+ clearTimeout(agendaVisto);
+ agendaVisto=setTimeout(()=>{
+  const alvo=$('saveStatus');
+  alvo.classList.remove('confirmando');void alvo.offsetWidth;alvo.classList.add('confirmando');
+  clearTimeout(temporizadorVisto);
+  temporizadorVisto=setTimeout(()=>alvo.classList.remove('confirmando'),700);
+ },500);
+}
+// Reinicia uma animação de entrada num elemento que sobreviveu ao render.
+function reanimar(el,atraso){if(!el)return;el.classList.remove('entra');void el.offsetWidth;el.style.animationDelay=atraso||'0ms';el.classList.add('entra');}
+let ultimaEdicao=0;
+function changed(){ultimaEdicao=Date.now();save();renderCV();updateProfile();}
+function esconderToast(){const t=$('toast');if(t.hidden)return;t.classList.add('saindo');setTimeout(()=>{t.hidden=true;t.classList.remove('saindo');},180);}
+function notify(message,undo,rotulo){clearTimeout(toastTimer);const t=$('toast');if(t.classList.contains('saindo')){t.classList.remove('saindo');t.hidden=true;void t.offsetWidth;}$('toastText').textContent=message;t.hidden=false;undoAction=undo||null;$('undoButton').hidden=!undo;$('undoButton').textContent=rotulo||'Desfazer';toastTimer=setTimeout(esconderToast,undo?12000:6500);}
+$('undoButton').onclick=()=>{if(undoAction){undoAction();undoAction=null;save();renderAll();}esconderToast();};
+function sectionMeta(sec){const t=sec.titulo.toLocaleLowerCase('pt-BR');if(t.includes('experi'))return{label:'Experiência profissional',icon:'briefcase',description:'Conte onde você atuou e o que fez em cada experiência.',add:'Adicionar experiência'};if(t.includes('forma'))return{label:'Formação acadêmica',icon:'graduation',description:'Sua graduação e as experiências que ampliam sua formação.',add:'Adicionar formação'};if(t.includes('curso'))return{label:'Cursos e certificações',icon:'award',description:'Inclua os cursos mais relevantes para a sua próxima oportunidade.',add:'Adicionar curso'};if(t.includes('idioma'))return{label:sec.titulo,icon:'globe',description:'Indique os idiomas que você fala e seu nível em cada um.'};if(t.includes('compet'))return{label:'Competências',icon:'spark',description:'Destaque as habilidades e ferramentas que fazem parte da sua rotina.'};if(t.includes('perfil'))return{label:'Sobre você',icon:'align',description:'Apresente sua trajetória e o que você busca, em poucas linhas.'};return{label:sec.titulo||'Nova seção',icon:'align',description:'Adicione as informações que ajudam a contar a sua história.',add:'Adicionar item'};}
+function navigate(value){active=value;openEntry=0;document.body.classList.toggle('info-mode',value==='about'||value==='mcp');renderNav();renderEditor();$('sidebar').classList.remove('open');$('mobileMenu').setAttribute('aria-expanded','false');setMobilePreview(false);document.body.classList.remove('preview-mode');$('expandPreview').setAttribute('aria-pressed','false');$('expandPreview').setAttribute('aria-label','Ampliar prévia');window.scrollTo({top:0,behavior:'instant'});document.querySelector('.main').scrollTo({top:0,behavior:'instant'});reanimar(document.querySelector('.editor-header'),'0ms');reanimar($('editorBody'),'40ms');requestAnimationFrame(fitPreview);}
+function renderNav(){const nav=$('navigation');nav.replaceChildren();const add=(label,symbol,id,count)=>{const b=button(label,()=>navigate(id),'nav-item'+(active===id?' active':''),symbol);if(active===id)b.setAttribute('aria-current','step');if(count!==undefined)b.append(node('span','nav-count',String(count).padStart(2,'0')));nav.append(b);};add('Informações pessoais','user','personal');dados.secoes.forEach((s,i)=>{const m=sectionMeta(s);add(m.label,m.icon,i,s.tipo==='entradas'?s.itens.length:undefined);});nav.append(node('div','nav-divisao'),node('div','side-caption side-caption-2','O APLICATIVO'));add('Aparência','sliders','appearance');add('Conectar sua IA','spark','mcp');add('Sobre o Folium','leaf','about');posicionarIndicador();}
+// A pastilha da seção ativa é o único elemento da navegação que sobrevive ao
+// re-render — por isso ela pode deslizar de um item para o outro.
+let indicadorPronto=false;
+function posicionarIndicador(){
+ const marca=$('navIndicador'),nav=$('navigation'),alvo=nav.querySelector('.nav-item.active');
+ if(!alvo){marca.classList.remove('visivel');indicadorPronto=false;return;}
+ const mover=()=>{
+  marca.style.height=alvo.offsetHeight+'px';
+  marca.style.transform='translateY('+(nav.offsetTop+alvo.offsetTop)+'px)';
+  marca.classList.add('visivel');
+ };
+ if(indicadorPronto){mover();return;}
+ // Na primeira vez ela aparece já no lugar, em vez de correr desde o topo.
+ marca.style.transition='none';mover();void marca.offsetWidth;marca.style.transition='';
+ indicadorPronto=true;
+}
+function updateProfile(){const words=dados.nome.trim().split(/\s+/);const curto=words.slice(0,2).join(' ');$('profileName').textContent=curto||'Seu currículo';$('profilePhoto').src=dados.foto||AVATAR_PADRAO;}
+function field(label,value,onChange,options={}){const wrap=node('div','field'),id='field-'+(++fieldId),lab=node('label','',label);lab.htmlFor=id;const input=node(options.multiline?'textarea':'input');input.id=id;input.value=value;input.placeholder=options.placeholder||'';if(options.rows)input.rows=options.rows;if(options.autocomplete)input.autocomplete=options.autocomplete;input.addEventListener('input',()=>{onChange(input.value);changed();});wrap.append(lab,input);if(options.hint)wrap.append(node('span','hint',options.hint));return wrap;}
+function renderEditor(){const body=$('editorBody');body.replaceChildren();fieldId=0;const personal=active==='personal',appearance=active==='appearance',about=active==='about',mcp=active==='mcp';const sec=typeof active==='number'?dados.secoes[active]:null;const meta=sec?sectionMeta(sec):{};
+ $('editorTitle').textContent=personal?'Informações pessoais':appearance?'Do seu jeito':about?'Sobre o Folium':mcp?'Conectar sua IA':meta.label;
+ $('editorDescription').textContent=personal?'Vamos começar pelo essencial: como você quer se apresentar.':appearance?'Pequenos ajustes para uma apresentação bem cuidada.':about?'Um editor de currículo que cabe inteiro no seu computador.':mcp?'Opcional, para quem já usa um assistente de IA.':meta.description;
+ $('sectionNumber').textContent=(appearance||about||mcp)?'':String(personal?1:active+2).padStart(2,'0')+' / '+String(dados.secoes.length+1).padStart(2,'0');
+ $('nextSection').hidden=appearance||about||mcp;$('nextSection').onclick=()=>navigate(personal?(dados.secoes.length?0:'appearance'):active+1<dados.secoes.length?active+1:'appearance');
+ if(personal)renderPersonal(body);else if(appearance)renderAppearance(body);else if(about)renderAbout(body);else if(mcp)renderMcp(body);else if(sec)renderSection(body,sec);
+}
+function renderPersonal(body){
+ const row=node('div','photo-row'),img=node('img','photo-editor');img.src=dados.foto||AVATAR_PADRAO;img.alt='Sua foto';img.hidden=!dados.foto;const info=node('div','photo-info');info.append(node('strong','',dados.foto?'Sua foto de apresentação':'Foto de apresentação'));
+ const links=node('div','photo-links');links.append(button(dados.foto?'Trocar foto':'Adicionar foto',()=>$('photoInput').click(),'text-button'));if(dados.foto)links.append(button('Remover',()=>{const old=dados.foto;dados.foto='';changed();renderEditor();notify('Foto removida.',()=>{dados.foto=old;});},'text-button'));
+ info.append(links,node('p','photo-caption','JPG, PNG ou WebP. A foto é opcional.'));row.append(img,info);body.append(row);
+ body.append(field('Nome completo',dados.nome,v=>dados.nome=v,{autocomplete:'name',placeholder:'Seu nome, como você assina'}));
+ body.append(field('Título profissional',dados.subtitulo,v=>dados.subtitulo=v,{multiline:true,rows:2,placeholder:'Ex.: Analista de dados — Business Intelligence',hint:'Seu momento profissional e a área em que deseja atuar.'}));
+ const grid=node('div','field-grid');dados.contato.forEach((c,i)=>{const labels=['Cidade e estado','Telefone','E-mail','LinkedIn'];const dicas=['Ex.: Recife/PE','Ex.: +55 (81) 90000-0000','Ex.: voce@email.com','Ex.: linkedin.com/in/seu-perfil'];const f=field(labels[i]||'Outro contato',c,v=>dados.contato[i]=v,{placeholder:dicas[i]||''});if(i>3){const input=f.querySelector('input'),line=node('div','contact-field');input.replaceWith(line);line.append(input,iconButton('Remover contato','close',()=>{const old=dados.contato.splice(i,1)[0];changed();renderEditor();notify('Contato removido.',()=>dados.contato.splice(i,0,old));}));}if(i>=2)f.style.gridColumn='1 / -1';grid.append(f);});body.append(grid);
+ body.append(button('Adicionar outro contato',()=>{dados.contato.push('');save();renderEditor();$('editorBody').querySelectorAll('input').item(dados.contato.length).focus();},'text-button'));
+ const tip=node('div','editor-tip');tip.style.marginTop='22px';tip.append(icon('checkCloud'),node('span','',desktop?'Seu currículo é salvo neste computador. Para guardar uma cópia ou levar a outro, use o menu no topo.':'Tudo é salvo automaticamente neste navegador. Para levar a outro computador, use “Salvar cópia editável” no menu do topo.'));body.append(tip);
+}
+function removeEntry(sec,index){const removed=sec.itens.splice(index,1)[0];openEntry=Math.max(0,index-1);changed();renderNav();renderEditor();notify('Item removido.',()=>sec.itens.splice(index,0,removed));}
+function move(array,index,delta){const target=index+delta;if(target<0||target>=array.length)return false;[array[index],array[target]]=[array[target],array[index]];return true;}
+function textoExemplo(titulo){const t=titulo.toLocaleLowerCase('pt-BR');if(t.includes('perfil'))return 'Em 3 a 5 linhas: onde você está, o que já fez e o que procura agora.';if(t.includes('idioma'))return 'Ex.: Inglês — avançado. Espanhol — intermediário. Português — nativo.';if(t.includes('compet'))return 'Separe por · as habilidades e ferramentas do seu dia a dia.';return 'Escreva aqui o conteúdo desta seção.';}
+function renderSection(body,sec){
+ if(sec.tipo==='texto'){body.append(field(sec.titulo,sec.corpo,v=>sec.corpo=v,{multiline:true,rows:sec.titulo.toLowerCase().includes('perfil')?10:6,placeholder:textoExemplo(sec.titulo),hint:'Escreva de forma direta. Prefira informações relevantes para a vaga.'}));}
+ else{sec.itens.forEach((item,index)=>{
+ const card=node('div','entry-card'),summary=node('div','entry-summary');const expanded=index===openEntry;const toggle=button('',()=>{
+  // Recolher espera a animação terminar; o re-render destrói o cartão, então é
+  // a única saída que precisa ser adiada à mão.
+  if(expanded){card.classList.add('recolhendo');setTimeout(()=>{openEntry=-1;renderEditor();},230);return;}
+  openEntry=index;animarAbertura=true;renderEditor();
+ },'entry-toggle',expanded?'chevronDown':'chevronRight');const title=node('span','',item.org||'Novo item');title.append(node('small','',item.periodo||'Preencha os detalhes'));toggle.append(title);toggle.setAttribute('aria-expanded',String(expanded));summary.append(toggle);
+ const actions=node('div','entry-actions');const up=iconButton('Subir '+(item.org||'item'),'up',()=>{if(move(sec.itens,index,-1)){openEntry=index-1;changed();renderEditor();}});up.disabled=index===0;const down=iconButton('Descer '+(item.org||'item'),'down',()=>{if(move(sec.itens,index,1)){openEntry=index+1;changed();renderEditor();}});down.disabled=index===sec.itens.length-1;actions.append(up,down,iconButton('Remover '+(item.org||'item'),'trash',()=>removeEntry(sec,index)));summary.append(actions);card.append(summary);
+ if(expanded){const content=node('div','entry-content-inner');const education=sec.titulo.toLowerCase().includes('forma'),course=sec.titulo.toLowerCase().includes('curso');content.append(field(education?'Instituição de ensino':course?'Nome do curso':'Escritório ou organização',item.org,v=>{item.org=v;title.firstChild.textContent=v||'Novo item';}),field(education?'Curso ou formação':course?'Instituição':'Cargo e área de atuação',item.cargo,v=>item.cargo=v));const grid=node('div','field-grid');grid.append(field('Período',item.periodo,v=>{item.periodo=v;title.querySelector('small').textContent=v||'Preencha os detalhes';},{placeholder:'Ex.: Jan 2026 – Atual'}),field('Local',item.local,v=>item.local=v,{placeholder:'Ex.: Recife/PE'}));content.append(grid);
+ const details=node('div','field');details.append(node('div','subhead','Atividades e destaques'));item.topicos.forEach((text,ti)=>{const row=node('div','bullet-row'),ta=node('textarea');ta.value=text;ta.rows=3;ta.setAttribute('aria-label','Atividade '+(ti+1));ta.placeholder='Descreva uma atividade ou resultado';ta.oninput=()=>{item.topicos[ti]=ta.value;changed();};row.append(ta,iconButton('Remover atividade '+(ti+1),'close',()=>{const removed=item.topicos.splice(ti,1)[0];changed();renderEditor();notify('Atividade removida.',()=>item.topicos.splice(ti,0,removed));}));details.append(row);});details.append(button('Adicionar atividade',()=>{item.topicos.push('');save();renderEditor();const all=$('editorBody').querySelectorAll('.bullet-row textarea');all[all.length-1].focus();},'add-button','plus'));content.append(details);
+  const caixa=node('div','entry-content');caixa.append(content);card.append(caixa);
+  // Abre da altura zero, sem salto: a linha do grid vai de 0fr a 1fr.
+  if(animarAbertura){animarAbertura=false;card.classList.add('abrindo');requestAnimationFrame(()=>requestAnimationFrame(()=>card.classList.remove('abrindo')));}
+ }
+ body.append(card);
+ });body.append(button(sectionMeta(sec).add||'Adicionar item',()=>{sec.itens.push({org:'',cargo:'',periodo:'',local:'',topicos:[]});openEntry=sec.itens.length-1;changed();renderNav();renderEditor();$('editorBody').querySelector('.entry-content input').focus();},'add-button','plus'));}
+ const tools=node('div','section-tools');const up=iconButton('Subir seção','up',()=>{if(move(dados.secoes,active,-1)){active--;save();renderAll();}});up.disabled=active===0;const down=iconButton('Descer seção','down',()=>{if(move(dados.secoes,active,1)){active++;save();renderAll();}});down.disabled=active===dados.secoes.length-1;tools.append(up,down,button('Renomear',()=>renameSection(sec),'text-button'),button('Excluir seção',()=>{const index=active;dados.secoes.splice(index,1);active='personal';save();renderAll();notify('Seção removida.',()=>dados.secoes.splice(index,0,sec));},'text-button'));body.append(tools);
+}
+// Um controle segmentado que troca de estado sem re-renderizar a página — é o
+// que permite à pastilha deslizar de uma opção para a outra.
+function segmentado(opcoes,atual,aoEscolher){
+ const grupo=node('div','segmented');grupo.style.setProperty('--n',opcoes.length);
+ const pastilha=node('span','segmented-pill');grupo.append(pastilha);
+ const botoes=[];
+ const marcar=valor=>opcoes.forEach(([,v],i)=>{
+  const ligado=String(v)===String(valor);
+  botoes[i].classList.toggle('selected',ligado);
+  botoes[i].setAttribute('aria-pressed',String(ligado));
+  if(ligado)pastilha.style.setProperty('--i',i);
+ });
+ opcoes.forEach(([rotulo,valor])=>{const b=button(rotulo,()=>{marcar(valor);aoEscolher(valor);},'');botoes.push(b);grupo.append(b);});
+ marcar(atual);
+ return grupo;
+}
+function renderAppearance(body){
+ const tema=node('div','appearance-option');
+ tema.append(node('h3','','Tema do aplicativo'),node('p','','Claro, escuro, ou acompanhando o seu sistema. A folha do currículo continua branca: é ela que vai ser impressa.'));
+ tema.append(segmentado(TEMAS,temaPreferido,definirTema));body.append(tema);
+ const spacing=node('div','appearance-option');spacing.append(node('h3','','Espaçamento'),node('p','','Encontre o equilíbrio entre conteúdo e respiro.'));
+ spacing.append(segmentado([['Compacto','9.7'],['Padrão','10.2'],['Amplo','10.8']],dados.densidade,value=>{dados.densidade=value;changed();}));body.append(spacing);
+ const tipografia=node('div','appearance-option');tipografia.append(node('h3','','Fonte do currículo'),node('p','','O texto do documento. A interface do aplicativo não muda.'));
+ const lista=node('div','font-list');const escolhida=fontePor(dados.fonte).chave;const exemplo=dados.nome.trim()||'Ana Beatriz Martins';
+ fontesDisponiveis().forEach(f=>{
+  const linha=button('',()=>{dados.fonte=f.chave;changed();renderEditor();},'font-row'+(f.chave===escolhida?' selected':''));
+  const amostra=node('span','font-row-sample',exemplo);amostra.style.fontFamily=f.pilha;
+  const marca=node('span','font-row-check');marca.append(icon('check'));
+  linha.append(amostra,node('span','font-row-meta',f.rotulo+' · '+f.nota),marca);
+  linha.setAttribute('aria-pressed',String(f.chave===escolhida));linha.setAttribute('aria-label','Fonte '+f.rotulo+', '+f.nota);
+  lista.append(linha);
+ });
+ tipografia.append(lista);body.append(tipografia);
+ const photo=node('div','appearance-option toggle-row'),copy=node('div');copy.append(node('h3','','Foto no currículo'),node('p','',dados.foto?'Você escolhe se ela aparece no PDF.':'Adicione uma foto em Informações pessoais.'));const toggle=button('',()=>{dados.mostrarFoto=dados.mostrarFoto===false;changed();renderEditor();},'switch');toggle.setAttribute('role','switch');toggle.setAttribute('aria-label','Mostrar foto no currículo');toggle.setAttribute('aria-checked',String(dados.mostrarFoto!==false&&!!dados.foto));toggle.disabled=!dados.foto;photo.append(copy,toggle);body.append(photo);
+ const modelo=node('div','template-note');modelo.append(icon('fileCheck'),node('span','','Modelo clássico · inspirado em Harvard'));body.append(modelo);
+ const note=node('div','editor-tip');note.append(icon('fileCheck'),node('span','','Uma coluna e texto selecionável no PDF, para pessoas e sistemas de recrutamento lerem sem tropeçar.'));body.append(note);
+}
+function cartao(body,titulo,simbolo,texto){const c=node('div','appearance-option about-card'),head=node('div','about-card-head');head.append(icon(simbolo),node('h3','',titulo));c.append(head,node('p','',texto));body.append(c);return c;}
+function blocoComando(pai,rotulo,comando){
+ if(rotulo)pai.append(node('div','comando-rotulo',rotulo));
+ const bloco=node('pre','about-comando',comando);pai.append(bloco);
+ pai.append(button('Copiar',async()=>{
+  try{await navigator.clipboard.writeText(comando);notify('Copiado.');}
+  catch{const faixa=document.createRange();faixa.selectNodeContents(bloco);const selecao=getSelection();selecao.removeAllRanges();selecao.addRange(faixa);notify('Selecionado — use ⌘C para copiar.');}
+ },'text-button'));
+}
+function renderMcp(body){
+ const hero=node('div','about-hero');
+ hero.append(node('p','','O Folium fala MCP, o protocolo aberto que permite a um assistente de IA usar programas do seu computador. Ele não é de nenhuma empresa: funciona com Claude, Cursor, VS Code, Windsurf, Zed e qualquer outro assistente que suporte o protocolo. Em vez de digitar campo por campo, você conversa.'));
+ hero.append(node('p','','É totalmente opcional. O Folium funciona inteiro sem isso — esta página existe para quem já tem uma IA na rotina.'));
+ body.append(hero);
+ cartao(body,'Para quem isso foi feito','user','Para quem escreve com ajuda de uma IA e acha mais rápido falar do que preencher formulário. E para quem quer uma segunda opinião sobre o próprio currículo: enxugar para caber em uma página, reescrever uma experiência com mais clareza, montar o perfil a partir de uma conversa. Quem prefere digitar não perde nada: os dois caminhos escrevem no mesmo arquivo, e você pode alternar entre eles a qualquer momento.');
+ cartao(body,'O que a IA passa a poder fazer','align','Quatro coisas, e só elas: ler o currículo, atualizar seus dados pessoais, criar ou reescrever uma seção e remover uma seção. Cada alteração aparece nesta janela na hora, sem você clicar em nada — a não ser que esteja digitando, quando o Folium pergunta antes de recarregar para não engolir o que você escreveu.');
+ cartao(body,'Sem nuvem, sem conta, sem chave','checkCloud','Não existe login nem senha porque não existe nada remoto para proteger: o servidor roda no seu computador, iniciado pelo próprio assistente, e abre um único arquivo — o currículo que já está aqui. Não há porta aberta, serviço na internet nem cadastro. Sua foto nunca é enviada para a IA. E o Folium continua guardando a versão anterior a cada gravação: se a IA escrever algo que você não queria, dá para voltar.');
+ const como=cartao(body,'Como conectar','plus','Você precisa ter o Node instalado. Depois, é uma linha — o assistente inicia o Folium sozinho quando precisar.');
+ COMANDOS_MCP.forEach(([rotulo,comando])=>blocoComando(como,rotulo,comando));
+ const exemplos=cartao(body,'O que dizer depois de conectar','spark','Converse normalmente. Por exemplo:');
+ const lista=node('ul','exemplos-ia');
+ ['“Leia meu currículo e diga o que está sobrando para caber em uma página.”',
+  '“Adiciona na experiência: Estúdio Norte, analista de dados, de janeiro de 2026 até hoje, com três atividades.”',
+  '“Reescreve meu perfil em três linhas, com foco em vagas de dados.”',
+  '“Meu inglês agora é avançado, atualiza a seção de idiomas.”'].forEach(t=>lista.append(node('li','',t)));
+ exemplos.append(lista);
+ body.append(node('p','page-note','O servidor é software livre, faz parte do mesmo repositório do Folium e pode ser lido por inteiro: são cerca de duzentas linhas.'));
+}
+function renderAbout(body){
+ const hero=node('div','about-hero');
+ hero.append(node('p','','O Folium existe para tirar o formato do seu caminho. Montar um currículo costuma virar uma briga com margens, caixas de texto e modelos que quebram quando você acrescenta uma linha — e o tempo que deveria ser do conteúdo vai embora na diagramação.'));
+ hero.append(node('p','','Aqui você preenche campos, vê a folha final ao lado enquanto escreve e exporta quando estiver pronta. Nenhuma etapa exige saber diagramar. Folium é “folha”, em latim: é disso que se trata, uma folha bem cuidada com a sua história.'));
+ body.append(hero);
+ const card=(titulo,simbolo,texto)=>cartao(body,titulo,simbolo,texto);
+ card('Tudo acontece no seu computador','checkCloud',desktop?'Não há conta, nuvem nem telemetria: o Folium funciona offline e guarda o currículo na pasta do aplicativo, com uma cópia de recuperação a cada gravação.':'Não há conta, nuvem nem telemetria: o rascunho fica salvo neste navegador, apenas neste computador.');
+ card('O modelo, inspirado no currículo de Harvard','fileCheck','O documento segue o formato de uma coluna dos guias de carreira de Harvard: tipografia serifada, seções em caixa alta separadas por fio, datas ao lado de cada experiência e frases curtas começando por verbo. Sem colunas duplas, gráficos ou ícones — é o que uma pessoa lê em poucos segundos e o que os sistemas de recrutamento conseguem extrair sem erro. O Folium não tem vínculo com a universidade: o que ele empresta é o formato.');
+ card('Uma página, sempre que possível','align','Abaixo da prévia, um indicador avisa quando o conteúdo passa de uma página A4 — o limite que a maioria dos processos seletivos espera de quem está começando. Em Aparência você ajusta o espaçamento e a fonte para caber sem cortar o que importa.');
+ card('Seu currículo é seu, para levar','archive','Guarde um backup em JSON, salve uma cópia editável em HTML que abre em qualquer computador sem instalar nada, ou exporte o PDF final quando estiver pronto.');
+ const ia=card('Conecte sua IA, se você usa uma','spark','Quem usa Claude, Cursor ou outro assistente com suporte a MCP pode deixá-lo ler e escrever este currículo, sem nuvem e sem conta. É opcional: o Folium funciona igual sem isso.');
+ ia.append(button('Ver como conectar',()=>navigate('mcp'),'text-button'));
+ const aberto=card('Código aberto','leaf','O Folium é software livre sob licença MIT: qualquer pessoa pode usar, estudar, adaptar e compartilhar. Sugestões e melhorias são bem-vindas.');
+ const linha=node('p','about-link');
+ if(desktop)linha.append(node('span','',FOLIUM_REPO));
+ else{const a=node('a','',FOLIUM_REPO);a.href=FOLIUM_REPO;a.target='_blank';a.rel='noopener noreferrer';linha.append(a);}
+ aberto.append(linha);
+ body.append(node('p','page-note','Folium '+FOLIUM_VERSAO+' · editor de currículo offline para Windows e macOS.'));
+}
+function renderCV(){
+ const density=['9.2','9.7','10.2','10.8','11.4'].includes(String(dados.densidade))?String(dados.densidade):'10.2';document.documentElement.style.setProperty('--base',density+'pt');document.documentElement.style.setProperty('--cv-font',fontePor(dados.fonte).pilha);
+ const cv=$('cv');cv.replaceChildren();const temCabecalho=[dados.nome,dados.subtitulo,...dados.contato].some(v=>v.trim())||(dados.foto&&dados.mostrarFoto!==false);const head=node('header','cv-header'),text=node('div','cv-header-text');text.append(node('h1','cv-name',dados.nome));if(dados.subtitulo.trim())text.append(node('p','cv-subtitle',dados.subtitulo));const contact=node('p','cv-contact');dados.contato.filter(c=>c.trim()).forEach((c,i)=>{if(i)contact.append(document.createTextNode(' · '));contact.append(node('span','',c));});text.append(contact);head.append(text);if(dados.foto&&dados.mostrarFoto!==false){const img=node('img','cv-photo');img.src=dados.foto;img.alt='';head.append(img);}if(temCabecalho)cv.append(head);
+ dados.secoes.forEach(s=>{if(s.tipo==='texto'&&!s.corpo.trim())return;const entries=s.tipo==='entradas'?s.itens.filter(i=>[i.org,i.cargo,i.periodo,i.local,...i.topicos].some(v=>v.trim())):[];if(s.tipo==='entradas'&&!entries.length)return;const section=node('section','cv-section');section.append(node('h2','',s.titulo));if(s.tipo==='texto')section.append(node('p','',s.corpo));else entries.forEach(i=>{const entry=node('div','cv-entry'),line=node('div');if(i.org.trim())line.append(node('span','cv-org',i.org));if(i.periodo.trim()){if(i.org.trim())line.append(document.createTextNode(' · '));line.append(node('span','cv-period',i.periodo));}entry.append(line);if(i.cargo.trim()||i.local.trim())entry.append(node('div','cv-position',[i.cargo,i.local].filter(v=>v.trim()).join(' · ')));const bullets=i.topicos.filter(t=>t.trim());if(bullets.length){const ul=node('ul');bullets.forEach(t=>ul.append(node('li','',t)));entry.append(ul);}section.append(entry);});cv.append(section);});requestAnimationFrame(fitPreview);
+}
+function fitPreview(){const frame=$('paperFrame'),paper=$('paper');if(!frame.parentElement.clientWidth)return;const naturalWidth=paper.offsetWidth;const available=frame.parentElement.clientWidth;const scale=Math.min(1,available/naturalWidth);paper.style.transform='scale('+scale+')';frame.style.width=(naturalWidth*scale)+'px';frame.style.height=(paper.offsetHeight*scale)+'px';const usable=(297-28)*96/25.4;const ratio=$('cv').offsetHeight/usable;const overflow=ratio>1;const pages=Math.max(1,Math.ceil(ratio));$('pageLabel').textContent=overflow?'A4 · ~'+pages+' páginas':'A4 · 1 página';$('pageMessage').textContent=overflow?'O conteúdo passou de uma página':'Seu currículo cabe em uma página';$('pageStatus').classList.toggle('warning',overflow);$('pageNote').hidden=!overflow;$('pageProgress').style.width=Math.min(100,ratio*100)+'%';}
+function renderDocSwitch(){
+ if(desktop){const atual=documentos.find(d=>d.arquivo===documentoAtivo);$('docTitle').textContent=atual?.nome||'Currículo';}
+ else{const words=dados.nome.trim().split(/\s+/);const curto=words.slice(0,2).join(' ');$('docTitle').textContent=curto?'Currículo de '+curto:'Meu currículo';}
+ if(!desktop)return;
+ const menu=$('docSwitchMenu');menu.replaceChildren();
+ documentos.forEach(doc=>{const ativo=doc.arquivo===documentoAtivo;menu.append(button(doc.nome,()=>{if(!ativo)trocarDocumento(doc.arquivo);},'menu-doc'+(ativo?' ativo':''),'check'));});
+ menu.append(node('hr'),button('Novo currículo',criarDocumento,'','plus'),node('hr'),button('Renomear currículo atual',renomearDocumentoAtivo,''));
+ if(documentos.length>1)menu.append(button('Excluir currículo atual',excluirDocumentoAtivo,'menu-doc-excluir'));
+}
+async function trocarDocumento(arquivo){
+ try{await desktop.flush();const resultado=await desktop.switchDocument(arquivo);documentos=resultado.documentos.documentos;documentoAtivo=resultado.documentos.ativo;dados=resultado.carregado.data||clone(PADRAO);active='personal';renderAll();}
+ catch(error){notify(String(error));}
+}
+function criarDocumento(){
+ showDialog('Novo currículo',body=>{
+  body.append(node('p','','Ele começa em branco — não leva o conteúdo do currículo atual.'));
+  const f=field('Nome do currículo','',()=>{},{placeholder:'Ex.: Currículo de marketing'});
+  body.append(f,button('Criar currículo',async()=>{
+   const nome=f.querySelector('input').value.trim();if(!nome){f.querySelector('input').focus();return;}
+   try{await desktop.flush();const resultado=await desktop.createDocument(nome,clone(PADRAO));documentos=resultado.documentos.documentos;documentoAtivo=resultado.documentos.ativo;dados=resultado.carregado.data||clone(PADRAO);active='personal';renderAll();closeDialog();notify('Currículo criado.');}
+   catch(error){notify(String(error));}
+  },'btn primary','plus'));
+ });
+}
+function renomearDocumentoAtivo(){
+ const atual=documentos.find(d=>d.arquivo===documentoAtivo);
+ showDialog('Nome do currículo',body=>{
+  const f=field('Nome',atual?.nome||'',()=>{});const input=f.querySelector('input');
+  body.append(f,button('Salvar nome',async()=>{
+   const nome=input.value.trim();if(!nome){input.focus();return;}
+   try{const lista=await desktop.renameDocument(documentoAtivo,nome);documentos=lista.documentos;documentoAtivo=lista.ativo;renderDocSwitch();closeDialog();}
+   catch(error){notify(String(error));}
+  },'btn primary'));
+ });
+}
+function excluirDocumentoAtivo(){
+ const atual=documentos.find(d=>d.arquivo===documentoAtivo);
+ showDialog('Excluir este currículo?',body=>{
+  body.append(node('p','','“'+(atual?.nome||'')+'” será apagado deste computador, incluindo a cópia de recuperação.'));
+  body.append(button('Guardar backup antes',async()=>{await exportBackup();},'btn'));
+  body.append(button('Excluir currículo',async()=>{
+   try{const resultado=await desktop.deleteDocument(documentoAtivo);documentos=resultado.documentos.documentos;documentoAtivo=resultado.documentos.ativo;dados=resultado.carregado.data||clone(PADRAO);active='personal';renderAll();closeDialog();notify('Currículo excluído.');}
+   catch(error){notify(String(error));}
+  },'btn-perigo btn'));
+ });
+}
+function renderAll(){renderNav();renderEditor();renderCV();updateProfile();renderDocSwitch();}
+let previousFocus;
+function showDialog(title,build){previousFocus=document.activeElement;$('dialogTitle').textContent=title;$('dialogBody').replaceChildren();build($('dialogBody'));$('dialog').showModal();}
+function closeDialog(){if(!startupError)$('dialog').close();}
+$('closeDialog').onclick=closeDialog;$('dialog').addEventListener('close',()=>previousFocus?.isConnected&&previousFocus.focus());$('dialog').addEventListener('click',e=>{const r=$('dialog').getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)closeDialog();});
+function renameSection(sec){showDialog('Nome da seção',body=>{const f=field('Título',sec.titulo,()=>{});const input=f.querySelector('input');body.append(f,button('Salvar nome',()=>{if(!input.value.trim()){input.focus();return;}sec.titulo=input.value.trim();changed();renderNav();renderEditor();closeDialog();},'btn primary'));});}
+function setMobilePreview(on){document.body.classList.toggle('mobile-preview',on);$('tabEdit').classList.toggle('selected',!on);$('tabPreview').classList.toggle('selected',on);$('tabEdit').setAttribute('aria-pressed',String(!on));$('tabPreview').setAttribute('aria-pressed',String(on));$('tabPill').style.setProperty('--i',on?1:0);requestAnimationFrame(fitPreview);}
+$('tabEdit').onclick=()=>{document.body.classList.remove('preview-mode');setMobilePreview(false);};$('tabPreview').onclick=()=>setMobilePreview(true);
+$('expandPreview').onclick=()=>{const on=document.body.classList.toggle('preview-mode');$('expandPreview').setAttribute('aria-pressed',String(on));$('expandPreview').setAttribute('aria-label',on?'Voltar à edição':'Ampliar prévia');requestAnimationFrame(fitPreview);};
+$('mobileMenu').onclick=()=>{const open=$('sidebar').classList.toggle('open');$('mobileMenu').setAttribute('aria-expanded',String(open));};
+function closeMenu(){$('moreMenu').hidden=true;$('moreButton').setAttribute('aria-expanded','false');}
+function closeDocSwitch(){$('docSwitchMenu').hidden=true;$('docSwitchButton').setAttribute('aria-expanded','false');}
+$('docSwitchButton').onclick=()=>{
+ const botao=$('docSwitchButton'),menu=$('docSwitchMenu');
+ if(botao.disabled)return;
+ const abrir=menu.hidden;
+ if(abrir){
+  menu.hidden=false;
+  // Medir depois de exibir: escondido o menu não tem tamanho para caber na tela.
+  const r=botao.getBoundingClientRect(),largura=menu.offsetWidth,altura=menu.offsetHeight;
+  menu.style.left=Math.max(8,Math.min(r.left,innerWidth-largura-8))+'px';
+  menu.style.top=(r.bottom+6+altura>innerHeight-8?Math.max(8,r.top-6-altura):r.bottom+6)+'px';
+ }else menu.hidden=true;
+ botao.setAttribute('aria-expanded',String(abrir));
+ if(abrir)menu.querySelector('button')?.focus();
+};
+$('docSwitchMenu').addEventListener('click',closeDocSwitch);
+$('moreButton').onclick=()=>{const open=$('moreMenu').hidden;$('moreMenu').hidden=!open;$('moreButton').setAttribute('aria-expanded',String(open));if(open)$('moreMenu').querySelector('button').focus();};document.addEventListener('click',e=>{if(!e.target.closest('.more-wrap'))closeMenu();if(!e.target.closest('.doc-switch'))closeDocSwitch();if(!e.target.closest('.sidebar')&&!e.target.closest('#mobileMenu')){$('sidebar').classList.remove('open');$('mobileMenu').setAttribute('aria-expanded','false');}});document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(!$('moreMenu').hidden){closeMenu();$('moreButton').focus();}if(!$('docSwitchMenu').hidden){closeDocSwitch();$('docSwitchButton').focus();}$('sidebar').classList.remove('open');$('mobileMenu').setAttribute('aria-expanded','false');}});$('moreMenu').addEventListener('click',closeMenu);
+async function download(content,name,type){
+  if(desktop){
+    try{return await desktop.exportFile(content,name,type==='application/json'?'json':'html');}
+    catch(error){notify(String(error));return false;}
+  }
+  const url=URL.createObjectURL(new Blob([content],{type}));const a=node('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);return true;
+}
+function fileName(){return (dados.nome||'Meu currículo').replace(/[<>:"/\\|?*\x00-\x1F]/g,'').trim()||'Meu currículo';}
+async function exportBackup(){return download(JSON.stringify(dados,null,2),'Backup - '+fileName()+'.json','application/json');}
+$('downloadJSON').onclick=exportBackup;
+$('downloadHTML').onclick=async()=>{
+  const doc=document.documentElement.cloneNode(true);const copy=clone(dados);copy.documentId=Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8);
+  doc.querySelector('#embedded-data').textContent=JSON.stringify(copy).replace(/</g,'\\u003c');
+  doc.querySelectorAll('[data-desktop]').forEach(n=>n.remove());
+  doc.querySelector('#dialog').removeAttribute('open');doc.querySelector('#toast').hidden=true;doc.querySelector('#moreMenu').hidden=true;doc.querySelector('body').className='';doc.querySelector('.app').removeAttribute('inert');doc.querySelector('#sidebar').classList.remove('open');
+  // A cópia não leva o tema nem os resíduos de animação de quem a gerou.
+  doc.removeAttribute('data-tema');doc.querySelector('#toast').className='toast';doc.querySelector('#saveStatus').className='save-status';
+  const marcaCopia=doc.querySelector('#navIndicador');marcaCopia.removeAttribute('style');marcaCopia.className='nav-indicador';
+  if(await download('<!DOCTYPE html>\n'+doc.outerHTML,'Currículo editável - '+fileName()+'.html','text/html;charset=utf-8'))notify(desktop?'Cópia editável salva.':'Cópia editável preparada para download.');
+};
+function offerBackup(incoming){
+  if(!validData(incoming)){notify('Escolha um backup válido do currículo.');return;}
+  showDialog('Abrir este backup?',body=>{
+    body.append(node('p','','O currículo aberto será substituído pelo conteúdo de “'+(incoming.nome||'Sem nome')+'”. Primeiro, guarde uma cópia do currículo atual.'));
+    const confirm=button('Guardar o atual e abrir backup',async()=>{
+      confirm.disabled=true;
+      if(!await exportBackup()){confirm.disabled=false;return;}
+      const previous=dados;dados=incoming;
+      if(!await save()){dados=previous;await save();confirm.disabled=false;return;}
+      active='personal';renderAll();closeDialog();notify('Backup aberto. A cópia anterior foi guardada.');
+    },'btn primary');body.append(confirm);
+  });
+}
+$('importJSON').onclick=async()=>{
+  if(!desktop){$('backupInput').click();return;}
+  try{const incoming=await desktop.importBackup();if(incoming)offerBackup(incoming);}
+  catch(error){notify(String(error));}
+};
+$('backupInput').onchange=async e=>{const file=e.target.files[0];e.target.value='';if(!file)return;try{if(file.size>8000000)throw Error();const incoming=JSON.parse(await file.text());if(!validData(incoming))throw Error();offerBackup(incoming);}catch{notify('Não foi possível abrir. Escolha um backup válido do currículo.');}};
+$('photoInput').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;if(!['image/jpeg','image/png','image/webp'].includes(f.type)||f.size>15000000){notify('Escolha uma foto JPG, PNG ou WebP de até 15 MB.');return;}const url=URL.createObjectURL(f);const img=new Image();img.onload=()=>{const max=800,scale=Math.min(1,max/Math.max(img.width,img.height));const canvas=document.createElement('canvas');canvas.width=Math.round(img.width*scale);canvas.height=Math.round(img.height*scale);const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(img,0,0,canvas.width,canvas.height);dados.foto=canvas.toDataURL('image/jpeg',.9);dados.mostrarFoto=true;URL.revokeObjectURL(url);changed();renderEditor();notify('Foto atualizada.');};img.onerror=()=>{URL.revokeObjectURL(url);notify('Não foi possível ler essa foto. Tente outro arquivo.');};img.src=url;};
+$('exportPDF').onclick=()=>{
+  fitPreview();showDialog('Seu próximo passo, em PDF',body=>{
+    const summary=node('div','export-summary');summary.append(icon('fileCheck'));const text=node('div');text.append(node('strong','',fileName()),node('span','',$('pageLabel').textContent+' · texto selecionável'));summary.append(text);body.append(summary,node('p','','Na janela que abrir, escolha estas opções:'));
+    const steps=node('ol','steps');
+    const destination=desktop?(navigator.platform.includes('Mac')?'No menu PDF, escolha Salvar como PDF.':'Impressora: Microsoft Print to PDF.'):'Destino: Salvar como PDF.';
+    [destination,'Papel A4 e escala em 100%.',...(desktop?[]:['Desative os cabeçalhos e rodapés.'])].forEach(t=>steps.append(node('li','',t)));
+    body.append(steps,node('p','page-note','Confira a prévia de impressão: ela mostra a quantidade final de páginas.'),button('Continuar para salvar PDF',async()=>{
+      closeDialog();await save();const previousTitle=document.title;document.title='Currículo - '+fileName();
+      window.addEventListener('afterprint',()=>{document.title=previousTitle;},{once:true});
+      await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+      try{if(desktop)await desktop.print();else window.print();}catch(error){document.title=previousTitle;notify(String(error));}
+    },'btn primary','download'));
+  });
+};
+$('readText').onclick=()=>showDialog('Confira o texto do currículo',body=>{body.append(node('p','','Esta é a ordem do texto no editor. O PDF mantém uma coluna e texto selecionável para facilitar a extração; a interpretação pode variar entre sistemas.'));body.append(node('pre','',$('cv').innerText));});
+$('help').onclick=()=>showDialog('Um currículo fácil de cuidar',body=>{const steps=node('ol','steps');['Escolha uma seção no menu e preencha os campos. A prévia acompanha suas alterações.','Adicione experiências, atividades ou seções conforme precisar. Use as setas para mudar a ordem.','Acompanhe o aviso de tamanho abaixo da prévia. Em Aparência, você pode ajustar o espaçamento.','Use Exportar PDF quando estiver pronto para enviar.','No menu de três pontos, escolha Salvar cópia editável para guardar um HTML com seus dados. Ele abre em outro computador, mesmo sem internet.'].forEach(t=>steps.append(node('li','',t)));body.append(steps,node('p','page-note',desktop?'O Folium funciona offline e salva seus dados na pasta do aplicativo neste computador, com uma cópia de recuperação. Guarde backups também em outro lugar.':'O salvamento automático fica neste navegador. Limpar seus dados ou trocar de navegador pode apagar o rascunho; guarde uma cópia editável de tempos em tempos.'));});
+const listaLateral=document.querySelector('.sidebar-scroll');
+const marcarLista=()=>listaLateral.classList.toggle('rolada',listaLateral.scrollTop>2);
+listaLateral.addEventListener('scroll',marcarLista,{passive:true});
+const areaPrincipal=document.querySelector('.main');
+const marcarRolagem=()=>document.body.classList.toggle('rolado',(areaPrincipal.scrollTop||window.scrollY)>4);
+window.addEventListener('scroll',marcarRolagem,{passive:true});areaPrincipal.addEventListener('scroll',marcarRolagem,{passive:true});marcarRolagem();
+window.addEventListener('resize',()=>requestAnimationFrame(()=>{fitPreview();posicionarIndicador();}));new ResizeObserver(()=>requestAnimationFrame(fitPreview)).observe($('cv'));renderAll();setMobilePreview(false);aplicarTema();if(storageWarning){$('saveText').textContent=storageWarning;notify(storageWarning);}document.fonts.ready.then(fitPreview);
+if(desktop){
+  document.body.classList.add('desktop-app');
+  const abertura=$('abertura');abertura.hidden=false;
+  const rapido=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  setTimeout(()=>{abertura.classList.add('saindo');setTimeout(()=>abertura.remove(),400);},rapido?200:1000);
+  $('saveText').textContent='Salvo neste computador';
+  window.addEventListener('folium-save-error',event=>notify(event.detail));
+  const acoesDoMenu={'exportar-pdf':'exportPDF','guardar-backup':'downloadJSON','abrir-backup':'importJSON','copia-editavel':'downloadHTML','como-usar':'help','ampliar-previa':'expandPreview'};
+  async function conferirMudancaExterna(){
+    if(startupError)return;
+    let recebido;
+    try{recebido=(await desktop.load())?.data;}catch{return;}
+    if(!validData(recebido)||JSON.stringify(recebido)===JSON.stringify(dados))return;
+    const aplicar=()=>{dados=recebido;active='personal';renderAll();};
+    const digitando=['INPUT','TEXTAREA'].includes(document.activeElement?.tagName);
+    if(digitando||Date.now()-ultimaEdicao<4000){
+      notify('Seu currículo mudou fora do aplicativo.',aplicar,'Recarregar');
+      return;
+    }
+    aplicar();
+    notify('Currículo atualizado — a alteração veio de fora do aplicativo.');
+  }
+  window.addEventListener('folium-mudou-por-fora',conferirMudancaExterna);
+  // Com a janela oculta o WebView pode suspender: ao voltar para ela, conferimos de novo.
+  window.addEventListener('focus',conferirMudancaExterna);
+  window.addEventListener('folium-menu',event=>{
+    if(event.detail==='sobre-app'){navigate('about');return;}
+    const alvo=acoesDoMenu[event.detail];if(alvo)$(alvo).click();
+  });
+  if(startupError){
+    document.querySelector('.app').inert=true;
+    showDialog('Vamos recuperar seu currículo',body=>{
+      body.append(node('p','',startupError),button('Abrir um backup',async()=>{
+        try{
+          const incoming=await desktop.importBackup();if(!incoming)return;
+          if(!validData(incoming))throw new Error('Escolha um backup válido.');
+          await desktop.save(incoming);dados=incoming;startupError=null;
+          document.querySelector('.app').inert=false;$('closeDialog').hidden=false;
+          closeDialog();renderAll();notify('Currículo recuperado.');
+        }catch(error){notify(String(error));}
+      },'btn primary'),button('Tentar novamente',()=>location.reload(),'btn'));
+    });
+    $('closeDialog').hidden=true;
+    $('dialog').addEventListener('cancel',event=>{if(startupError)event.preventDefault();});
+  }else if(desktopState?.recovered){notify('Seu currículo foi recuperado da última cópia salva.');}
+  else if(!desktopState?.data){await save();}
+}
+})();
+
+</script>
+</body>
+</html>

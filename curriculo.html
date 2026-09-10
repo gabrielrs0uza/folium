@@ -175,6 +175,8 @@ a{color:inherit;text-decoration:none}
 /* No alto contraste do sistema o indicador não pinta: o item ativo volta a
    carregar o próprio fundo. */
 @media(forced-colors:active){.nav-indicador{display:none}.nav-item.active{background:Highlight;color:HighlightText;forced-color-adjust:none}}
+.nav-novo{color:var(--texto-3)}
+.nav-novo:hover:not(:disabled),.nav-novo:hover:not(:disabled) svg{color:var(--marca-texto)}
 .nav-divisao{border-top:1px solid var(--traco);margin:14px 10px 0}
 .sidebar-bottom{margin-top:auto;padding-top:18px}
 .profile{display:flex;align-items:center;gap:10px;padding:14px 10px 0;font-size:var(--t3);color:var(--texto-2)}
@@ -241,6 +243,7 @@ a{color:inherit;text-decoration:none}
 .editor-foot{padding:18px 0 0;margin-top:26px;border-top:1px solid var(--traco-2);display:flex;align-items:center;justify-content:space-between;gap:12px}
 .editor-foot span{font-size:var(--t1);color:var(--texto-4)}
 .editor-foot .btn{min-height:34px;padding:8px 12px;font-size:var(--t1)}
+.foot-nav{display:flex;gap:8px;flex-shrink:0}
 .editor-tip{display:flex;gap:9px;background:var(--repouso);color:var(--texto-3);padding:12px;border-radius:var(--r2);font-size:var(--t1);line-height:1.6;margin-top:5px}
 .editor-tip svg{width:15px;height:15px;margin-top:2px;color:var(--texto-4)}
 /* A entrada do editor ao trocar de seção: cabeçalho e corpo sobem juntos,
@@ -292,7 +295,9 @@ a{color:inherit;text-decoration:none}
 .add-button{width:100%;display:flex;align-items:center;justify-content:center;gap:8px;border:1px dashed var(--traco-3);border-radius:var(--r2);color:var(--marca);font-size:var(--t1);min-height:41px;background:var(--carta-2);margin:8px 0}
 .add-button:hover{background:var(--marca-eco-2);border-color:var(--marca)}
 .section-tools{border-top:1px solid var(--traco);display:flex;gap:7px;margin-top:24px;padding-top:18px;align-items:center}
-.section-tools .text-button{margin-left:auto;color:var(--perigo)}
+.section-tools .text-button{margin-left:auto}
+/* Só a exclusão é vermelha. Renomear divide a mesma linha, não a mesma cor. */
+.section-tools .text-button:last-child{color:var(--perigo)}
 
 /* --- prévia e folha A4 ---------------------------------------------------- */
 .preview-area{min-width:0;position:sticky;top:18px}
@@ -300,7 +305,16 @@ a{color:inherit;text-decoration:none}
 .preview-heading strong{display:flex;gap:8px;align-items:center;font-weight:500}
 .preview-heading strong svg{width:15px;height:15px;color:var(--texto-4)}
 .preview-actions{display:flex;align-items:center;gap:7px}
+/* Ampliação da folha. O zoom do sistema aumenta o aplicativo inteiro; este
+   aproxima só o papel — que é a única coisa aqui com tamanho real. */
+.zoom-controls{display:flex;align-items:center;gap:1px}
+.zoom-controls .icon-btn{min-width:26px;min-height:26px;padding:4px}
+.zoom-controls .icon-btn svg{width:14px;height:14px}
+.zoom-level{min-width:46px;padding:4px 5px;border-radius:var(--r1);font-size:var(--t1);color:var(--texto-3);font-variant-numeric:tabular-nums}
 .paper-frame{position:relative;margin:0 auto;overflow:hidden;border-radius:2px;box-shadow:var(--papel-sombra);background:#fff;border:1px solid var(--papel-traco)}
+/* Ampliada, a moldura guarda o tamanho que teria ajustada e a folha rola por
+   dentro: a página não salta de altura a cada clique no mais. */
+.paper-frame.ampliado{overflow:auto;overscroll-behavior:contain}
 .paper{width:210mm;min-height:297mm;padding:14mm 16mm;background:#fff;color:#222;transform-origin:top left;font-family:var(--cv-font,Georgia,'Times New Roman',serif)}
 .cv{font-size:var(--base);line-height:1.34;overflow-wrap:anywhere}
 .cv-header{display:flex;align-items:center;gap:7mm;padding-bottom:12px;border-bottom:1.5px solid #3e4a40;margin-bottom:12px}
@@ -320,6 +334,10 @@ a{color:inherit;text-decoration:none}
 .cv-position{font-style:italic;font-size:.96em}
 .cv-entry ul{margin:2px 0 0;padding-left:1.1em}
 .cv-entry li{padding-left:1px}
+/* Clicar num bloco da folha abre a seção dele no editor. A marca do apontador
+   é um cinza translúcido, não uma cor do tema: aqui quem manda é o papel. */
+.cv [data-secao]{cursor:pointer;border-radius:2px}
+@media(hover:hover){.cv [data-secao]:hover{background:rgba(0,0,0,.035);box-shadow:0 0 0 5px rgba(0,0,0,.035)}}
 .preview-foot{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:17px 1px 0;font-size:var(--t1);color:var(--texto-4)}
 .page-status{display:flex;gap:6px;align-items:center}
 .dot{width:6px;height:6px;border-radius:50%;background:var(--ponto-ok);flex:none;transition:background var(--medio)}
@@ -467,6 +485,7 @@ html{scrollbar-width:thin;scrollbar-color:var(--rolagem) transparent}
  .topbar{padding:0 25px}
  .workspace{padding:24px 24px 30px;gap:26px;grid-template-columns:minmax(290px,1fr) minmax(290px,1fr)}
  .save-status{display:none}
+ #pageLabel{display:none}
  .field-grid{grid-template-columns:1fr}
  .nav-item{padding-left:10px;padding-right:10px}
 }
@@ -550,8 +569,8 @@ html{scrollbar-width:thin;scrollbar-color:var(--rolagem) transparent}
 <main class="main">
  <header class="topbar" data-tauri-drag-region="deep"><div class="breadcrumb"><button class="icon-btn mobile-menu" id="mobileMenu" aria-label="Abrir seções" aria-expanded="false"><span data-icon="menu"></span></button><div class="doc-switch"><button class="doc-switch-btn" id="docSwitchButton" aria-haspopup="true" aria-expanded="false" aria-controls="docSwitchMenu"><strong id="docTitle">Meu currículo</strong><span class="doc-switch-chevron" data-icon="chevronDown"></span></button></div></div><div class="top-actions"><span class="save-status" id="saveStatus" role="status"><span data-icon="checkCloud"></span><span id="saveText">Salvo neste navegador</span></span><button class="icon-btn" id="themeToggle" aria-label="Alternar tema"><span data-icon="lua"></span></button><div class="more-wrap"><button class="icon-btn" id="moreButton" aria-label="Mais opções" aria-expanded="false" aria-controls="moreMenu"><span data-icon="more"></span></button><div class="menu" id="moreMenu" hidden><button id="downloadHTML"><span data-icon="download"></span>Salvar cópia editável</button><button id="downloadJSON"><span data-icon="archive"></span>Guardar backup</button><button id="importJSON"><span data-icon="upload"></span>Abrir backup</button><hr><button id="readText"><span data-icon="align"></span>Conferir texto do currículo</button><button id="help"><span data-icon="help"></span>Como usar</button></div></div><button class="btn primary" id="exportPDF"><span data-icon="download"></span>Exportar PDF</button></div></header>
  <div class="mobile-tabs" style="--n:2"><span class="segmented-pill" id="tabPill" style="--i:0"></span><button id="tabEdit" class="selected">Editar</button><button id="tabPreview">Ver currículo</button></div>
- <div class="workspace"><section class="editor" aria-labelledby="editorTitle"><div class="editor-header"><div class="editor-heading"><h2 id="editorTitle"></h2><span class="section-number" id="sectionNumber"></span></div><p class="editor-description" id="editorDescription"></p></div><div class="editor-body" id="editorBody"></div><div class="editor-foot"><span>As alterações aparecem na prévia.</span><button class="btn" id="nextSection">Próxima seção <span data-icon="arrowRight"></span></button></div></section>
- <section class="preview-area" aria-label="Prévia do currículo"><div class="preview-heading"><strong><span data-icon="eye"></span>Prévia do currículo</strong><div class="preview-actions"><span id="pageLabel">A4 · 1 página</span><button class="icon-btn" id="expandPreview" aria-label="Ampliar prévia" aria-pressed="false"><span data-icon="expand"></span></button></div></div><div class="paper-frame" id="paperFrame"><article class="paper" id="paper"><div class="cv" id="cv"></div></article></div><div class="preview-foot"><div class="page-status" id="pageStatus"><span class="dot"></span><span id="pageMessage">Seu currículo cabe em uma página</span></div><div class="progress-track" aria-hidden="true"><span id="pageProgress"></span></div></div><p class="page-note" id="pageNote" hidden>O conteúdo passou de uma página. Enxugue os textos ou escolha o espaçamento compacto em Aparência. A paginação final aparece na impressão.</p></section></div>
+ <div class="workspace"><section class="editor" aria-labelledby="editorTitle"><div class="editor-header"><div class="editor-heading"><h2 id="editorTitle"></h2><span class="section-number" id="sectionNumber"></span></div><p class="editor-description" id="editorDescription"></p></div><div class="editor-body" id="editorBody"></div><div class="editor-foot"><span>As alterações aparecem na prévia.</span><div class="foot-nav"><button class="btn" id="prevSection"><span data-icon="arrowLeft"></span> Seção anterior</button><button class="btn" id="nextSection">Próxima seção <span data-icon="arrowRight"></span></button></div></div></section>
+ <section class="preview-area" aria-label="Prévia do currículo"><div class="preview-heading"><strong><span data-icon="eye"></span>Prévia do currículo</strong><div class="preview-actions"><span id="pageLabel">A4 · 1 página</span><div class="zoom-controls" role="group" aria-label="Ampliação da folha"><button class="icon-btn" id="zoomOut" aria-label="Afastar a folha"><span data-icon="minus"></span></button><button class="zoom-level" id="zoomLevel" data-dica="Ajustar à largura">100%</button><button class="icon-btn" id="zoomIn" aria-label="Aproximar a folha"><span data-icon="plus"></span></button></div><button class="icon-btn" id="expandPreview" aria-label="Ampliar prévia" aria-pressed="false"><span data-icon="expand"></span></button></div></div><div class="paper-frame" id="paperFrame"><article class="paper" id="paper"><div class="cv" id="cv"></div></article></div><div class="preview-foot"><div class="page-status" id="pageStatus"><span class="dot"></span><span id="pageMessage">Seu currículo cabe em uma página</span></div><div class="progress-track" aria-hidden="true"><span id="pageProgress"></span></div></div><p class="page-note" id="pageNote" hidden>O conteúdo passou de uma página. Enxugue os textos ou escolha o espaçamento compacto em Aparência. A paginação final aparece na impressão.</p></section></div>
 </main>
 </div>
 <input type="file" id="photoInput" accept="image/jpeg,image/png,image/webp" hidden>
@@ -650,11 +669,11 @@ const ICONS = {
  graduation:'m2 9 10-5 10 5-10 5zM6 12v5c4 3 8 3 12 0v-5M22 9v7',award:'M16 8a4 4 0 1 1-8 0 4 4 0 0 1 8 0M8 12l-2 9 6-3 6 3-2-9',
  globe:'M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0M3 12h18M12 3c5 5 5 13 0 18-5-5-5-13 0-18',
  spark:'m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5z',sliders:'M4 7h8m4 0h4M4 17h4m4 0h8M12 4v6M8 14v6',
- plus:'M12 5v14M5 12h14',leaf:'M20 4C9 2 3 7 5 14c2 7 14 6 15-10ZM5 20l9-10',chevronRight:'m9 6 6 6-6 6',chevronDown:'m6 9 6 6 6-6',
+ plus:'M12 5v14M5 12h14',minus:'M5 12h14',leaf:'M20 4C9 2 3 7 5 14c2 7 14 6 15-10ZM5 20l9-10',chevronRight:'m9 6 6 6-6 6',chevronDown:'m6 9 6 6 6-6',
  checkCloud:'M8 18H6a4 4 0 0 1-1-8 7 7 0 0 1 13-2 5 5 0 0 1 2 9M10 16l3 3 6-6',more:'M5 11a1 1 0 1 0 0 2 1 1 0 0 0 0-2M12 11a1 1 0 1 0 0 2 1 1 0 0 0 0-2M19 11a1 1 0 1 0 0 2 1 1 0 0 0 0-2',
  download:'M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5',upload:'M12 16V4m-5 5 5-5 5 5M4 16v5h16v-5',archive:'M4 7h16v14H4zM3 3h18v4H3zM9 11h6',
  help:'M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0M9 9a3 3 0 0 1 6 0c0 2-3 2-3 4M12 17h.01',
- fileCheck:'M14 2H5v20h14V7zM14 2v6h5M8 15l3 3 5-6',arrowRight:'M4 12h16m-6-6 6 6-6 6',eye:'M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0',
+ fileCheck:'M14 2H5v20h14V7zM14 2v6h5M8 15l3 3 5-6',arrowRight:'M4 12h16m-6-6 6 6-6 6',arrowLeft:'M20 12H4m6-6-6 6 6 6',eye:'M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0',
  expand:'M8 3H3v5M16 3h5v5M21 16v5h-5M8 21H3v-5',close:'m6 6 12 12M6 18 18 6',menu:'M4 6h16M4 12h16M4 18h16',
  sol:'M12 4V2M12 22v-2M4 12H2M22 12h-2M5.6 5.6 4.2 4.2M19.8 19.8l-1.4-1.4M18.4 5.6l1.4-1.4M4.2 19.8l1.4-1.4M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0',lua:'M20 14A8 8 0 0 1 10 4a8 8 0 1 0 10 10Z',
  up:'M12 20V4m-6 6 6-6 6 6',down:'M12 4v16m-6-6 6 6 6-6',trash:'M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7M14 10v7',check:'m5 12 4 4L19 6'
@@ -778,7 +797,7 @@ function notify(message,undo,rotulo){clearTimeout(toastTimer);const t=$('toast')
 $('undoButton').onclick=()=>{if(undoAction){undoAction();undoAction=null;save();renderAll();}esconderToast();};
 function sectionMeta(sec){const t=sec.titulo.toLocaleLowerCase('pt-BR');if(t.includes('experi'))return{label:'Experiência profissional',icon:'briefcase',description:'Conte onde você atuou e o que fez em cada experiência.',add:'Adicionar experiência'};if(t.includes('forma'))return{label:'Formação acadêmica',icon:'graduation',description:'Sua graduação e as experiências que ampliam sua formação.',add:'Adicionar formação'};if(t.includes('curso'))return{label:'Cursos e certificações',icon:'award',description:'Inclua os cursos mais relevantes para a sua próxima oportunidade.',add:'Adicionar curso'};if(t.includes('idioma'))return{label:sec.titulo,icon:'globe',description:'Indique os idiomas que você fala e seu nível em cada um.'};if(t.includes('compet'))return{label:'Competências',icon:'spark',description:'Destaque as habilidades e ferramentas que fazem parte da sua rotina.'};if(t.includes('perfil'))return{label:'Sobre você',icon:'align',description:'Apresente sua trajetória e o que você busca, em poucas linhas.'};return{label:sec.titulo||'Nova seção',icon:'align',description:'Adicione as informações que ajudam a contar a sua história.',add:'Adicionar item'};}
 function navigate(value){active=value;openEntry=0;document.body.classList.toggle('info-mode',value==='about'||value==='mcp');renderNav();renderEditor();$('sidebar').classList.remove('open');$('mobileMenu').setAttribute('aria-expanded','false');setMobilePreview(false);document.body.classList.remove('preview-mode');$('expandPreview').setAttribute('aria-pressed','false');$('expandPreview').setAttribute('aria-label','Ampliar prévia');window.scrollTo({top:0,behavior:'instant'});document.querySelector('.main').scrollTo({top:0,behavior:'instant'});reanimar(document.querySelector('.editor-header'),'0ms');reanimar($('editorBody'),'40ms');requestAnimationFrame(fitPreview);}
-function renderNav(){const nav=$('navigation');nav.replaceChildren();const add=(label,symbol,id,count)=>{const b=button(label,()=>navigate(id),'nav-item'+(active===id?' active':''),symbol);if(active===id)b.setAttribute('aria-current','step');if(count!==undefined)b.append(node('span','nav-count',String(count).padStart(2,'0')));nav.append(b);};add('Informações pessoais','user','personal');dados.secoes.forEach((s,i)=>{const m=sectionMeta(s);add(m.label,m.icon,i,s.tipo==='entradas'?s.itens.length:undefined);});nav.append(node('div','nav-divisao'),node('div','side-caption side-caption-2','O APLICATIVO'));add('Aparência','sliders','appearance');add('Conectar sua IA','spark','mcp');add('Sobre o Folium','leaf','about');posicionarIndicador();}
+function renderNav(){const nav=$('navigation');nav.replaceChildren();const add=(label,symbol,id,count)=>{const b=button(label,()=>navigate(id),'nav-item'+(active===id?' active':''),symbol);if(active===id)b.setAttribute('aria-current','step');if(count!==undefined)b.append(node('span','nav-count',String(count).padStart(2,'0')));nav.append(b);};add('Informações pessoais','user','personal');dados.secoes.forEach((s,i)=>{const m=sectionMeta(s);add(m.label,m.icon,i,s.tipo==='entradas'?s.itens.length:undefined);});nav.append(button('Nova seção',novaSecao,'nav-item nav-novo','plus'));nav.append(node('div','nav-divisao'),node('div','side-caption side-caption-2','O APLICATIVO'));add('Aparência','sliders','appearance');add('Conectar sua IA','spark','mcp');add('Sobre o Folium','leaf','about');posicionarIndicador();}
 // A pastilha da seção ativa é o único elemento da navegação que sobrevive ao
 // re-render — por isso ela pode deslizar de um item para o outro.
 let indicadorPronto=false;
@@ -802,6 +821,7 @@ function renderEditor(){const body=$('editorBody');body.replaceChildren();fieldI
  $('editorDescription').textContent=personal?'Vamos começar pelo essencial: como você quer se apresentar.':appearance?'Pequenos ajustes para uma apresentação bem cuidada.':about?'Um editor de currículo que cabe inteiro no seu computador.':mcp?'Opcional, para quem já usa um assistente de IA.':meta.description;
  $('sectionNumber').textContent=(appearance||about||mcp)?'':String(personal?1:active+2).padStart(2,'0')+' / '+String(dados.secoes.length+1).padStart(2,'0');
  $('nextSection').hidden=appearance||about||mcp;$('nextSection').onclick=()=>navigate(personal?(dados.secoes.length?0:'appearance'):active+1<dados.secoes.length?active+1:'appearance');
+ $('prevSection').hidden=appearance||about||mcp||personal;$('prevSection').onclick=()=>navigate(active===0?'personal':active-1);
  if(personal)renderPersonal(body);else if(appearance)renderAppearance(body);else if(about)renderAbout(body);else if(mcp)renderMcp(body);else if(sec)renderSection(body,sec);
 }
 function renderPersonal(body){
@@ -923,10 +943,37 @@ function renderAbout(body){
 }
 function renderCV(){
  const density=['9.2','9.7','10.2','10.8','11.4'].includes(String(dados.densidade))?String(dados.densidade):'10.2';document.documentElement.style.setProperty('--base',density+'pt');document.documentElement.style.setProperty('--cv-font',fontePor(dados.fonte).pilha);
- const cv=$('cv');cv.replaceChildren();const temCabecalho=[dados.nome,dados.subtitulo,...dados.contato].some(v=>v.trim())||(dados.foto&&dados.mostrarFoto!==false);const head=node('header','cv-header'),text=node('div','cv-header-text');text.append(node('h1','cv-name',dados.nome));if(dados.subtitulo.trim())text.append(node('p','cv-subtitle',dados.subtitulo));const contact=node('p','cv-contact');dados.contato.filter(c=>c.trim()).forEach((c,i)=>{if(i)contact.append(document.createTextNode(' · '));contact.append(node('span','',c));});text.append(contact);head.append(text);if(dados.foto&&dados.mostrarFoto!==false){const img=node('img','cv-photo');img.src=dados.foto;img.alt='';head.append(img);}if(temCabecalho)cv.append(head);
- dados.secoes.forEach(s=>{if(s.tipo==='texto'&&!s.corpo.trim())return;const entries=s.tipo==='entradas'?s.itens.filter(i=>[i.org,i.cargo,i.periodo,i.local,...i.topicos].some(v=>v.trim())):[];if(s.tipo==='entradas'&&!entries.length)return;const section=node('section','cv-section');section.append(node('h2','',s.titulo));if(s.tipo==='texto')section.append(node('p','',s.corpo));else entries.forEach(i=>{const entry=node('div','cv-entry'),line=node('div');if(i.org.trim())line.append(node('span','cv-org',i.org));if(i.periodo.trim()){if(i.org.trim())line.append(document.createTextNode(' · '));line.append(node('span','cv-period',i.periodo));}entry.append(line);if(i.cargo.trim()||i.local.trim())entry.append(node('div','cv-position',[i.cargo,i.local].filter(v=>v.trim()).join(' · ')));const bullets=i.topicos.filter(t=>t.trim());if(bullets.length){const ul=node('ul');bullets.forEach(t=>ul.append(node('li','',t)));entry.append(ul);}section.append(entry);});cv.append(section);});requestAnimationFrame(fitPreview);
+ const cv=$('cv');cv.replaceChildren();const temCabecalho=[dados.nome,dados.subtitulo,...dados.contato].some(v=>v.trim())||(dados.foto&&dados.mostrarFoto!==false);const head=node('header','cv-header'),text=node('div','cv-header-text');head.dataset.secao='personal';text.append(node('h1','cv-name',dados.nome));if(dados.subtitulo.trim())text.append(node('p','cv-subtitle',dados.subtitulo));const contact=node('p','cv-contact');dados.contato.filter(c=>c.trim()).forEach((c,i)=>{if(i)contact.append(document.createTextNode(' · '));contact.append(node('span','',c));});text.append(contact);head.append(text);if(dados.foto&&dados.mostrarFoto!==false){const img=node('img','cv-photo');img.src=dados.foto;img.alt='';head.append(img);}if(temCabecalho)cv.append(head);
+ dados.secoes.forEach((s,indice)=>{if(s.tipo==='texto'&&!s.corpo.trim())return;const entries=s.tipo==='entradas'?s.itens.filter(i=>[i.org,i.cargo,i.periodo,i.local,...i.topicos].some(v=>v.trim())):[];if(s.tipo==='entradas'&&!entries.length)return;const section=node('section','cv-section');section.dataset.secao=indice;section.append(node('h2','',s.titulo));if(s.tipo==='texto')section.append(node('p','',s.corpo));else entries.forEach(i=>{const entry=node('div','cv-entry'),line=node('div');if(i.org.trim())line.append(node('span','cv-org',i.org));if(i.periodo.trim()){if(i.org.trim())line.append(document.createTextNode(' · '));line.append(node('span','cv-period',i.periodo));}entry.append(line);if(i.cargo.trim()||i.local.trim())entry.append(node('div','cv-position',[i.cargo,i.local].filter(v=>v.trim()).join(' · ')));const bullets=i.topicos.filter(t=>t.trim());if(bullets.length){const ul=node('ul');bullets.forEach(t=>ul.append(node('li','',t)));entry.append(ul);}section.append(entry);});cv.append(section);});requestAnimationFrame(fitPreview);
 }
-function fitPreview(){const frame=$('paperFrame'),paper=$('paper');if(!frame.parentElement.clientWidth)return;const naturalWidth=paper.offsetWidth;const available=frame.parentElement.clientWidth;const scale=Math.min(1,available/naturalWidth);paper.style.transform='scale('+scale+')';frame.style.width=(naturalWidth*scale)+'px';frame.style.height=(paper.offsetHeight*scale)+'px';const usable=(297-28)*96/25.4;const ratio=$('cv').offsetHeight/usable;const overflow=ratio>1;const pages=Math.max(1,Math.ceil(ratio));$('pageLabel').textContent=overflow?'A4 · ~'+pages+' páginas':'A4 · 1 página';$('pageMessage').textContent=overflow?'O conteúdo passou de uma página':'Seu currículo cabe em uma página';$('pageStatus').classList.toggle('warning',overflow);$('pageNote').hidden=!overflow;$('pageProgress').style.width=Math.min(100,ratio*100)+'%';}
+// Ampliação da folha. "Ajustar" é o estado de origem — a escala que faz o papel
+// caber na coluna — e vale enquanto ninguém pedir outra coisa; a partir daí a
+// escala é do usuário e sobrevive a redimensionar a janela e a trocar de seção.
+const ZOOM_MIN=.4,ZOOM_MAX=2.5,ZOOM_NIVEIS=[.5,.75,1,1.25,1.5,2];
+let zoomUsuario=null,escalaAjuste=1,escalaAtual=1;
+function aplicarZoom(valor,ponto){
+ const frame=$('paperFrame'),antes=escalaAtual;
+ const r=frame.getBoundingClientRect();
+ // O ponto sob o cursor fica onde está. Sem cursor — nos botões — a âncora é o
+ // alto à esquerda: o texto do currículo começa ali, e é por ali que se lê.
+ const px=ponto?ponto.x-r.left:0,py=ponto?ponto.y-r.top:0;
+ const folhaX=(frame.scrollLeft+px)/antes,folhaY=(frame.scrollTop+py)/antes;
+ const alvo=Math.min(ZOOM_MAX,Math.max(ZOOM_MIN,valor));
+ zoomUsuario=Math.abs(alvo-escalaAjuste)<.005?null:alvo;
+ fitPreview();
+ frame.scrollLeft=folhaX*escalaAtual-px;frame.scrollTop=folhaY*escalaAtual-py;
+}
+function ajustarZoom(){zoomUsuario=null;fitPreview();$('paperFrame').scrollTo(0,0);}
+function fitPreview(){const frame=$('paperFrame'),paper=$('paper');if(!frame.parentElement.clientWidth)return;const naturalWidth=paper.offsetWidth;const available=frame.parentElement.clientWidth;escalaAjuste=Math.min(1,available/naturalWidth);const scale=escalaAtual=zoomUsuario?Math.min(ZOOM_MAX,Math.max(ZOOM_MIN,zoomUsuario)):escalaAjuste;
+ // Afastada, a moldura encolhe com a folha; aproximada, ela para de crescer no
+ // tamanho ajustado e o excedente vira rolagem.
+ const moldura=Math.min(scale,escalaAjuste);
+ paper.style.transform='scale('+scale+')';frame.style.width=(naturalWidth*moldura)+'px';frame.style.height=(paper.offsetHeight*moldura)+'px';frame.classList.toggle('ampliado',scale>escalaAjuste+.001);
+ const porcento=Math.round(scale*100);
+ $('zoomLevel').textContent=porcento+'%';
+ $('zoomLevel').setAttribute('aria-label','Folha em '+porcento+' por cento. Ajustar à largura.');
+ $('zoomOut').disabled=scale<=ZOOM_MIN+.001;$('zoomIn').disabled=scale>=ZOOM_MAX-.001;
+ const usable=(297-28)*96/25.4;const ratio=$('cv').offsetHeight/usable;const overflow=ratio>1;const pages=Math.max(1,Math.ceil(ratio));$('pageLabel').textContent=overflow?'A4 · ~'+pages+' páginas':'A4 · 1 página';$('pageMessage').textContent=overflow?'O conteúdo passou de uma página':'Seu currículo cabe em uma página';$('pageStatus').classList.toggle('warning',overflow);$('pageNote').hidden=!overflow;$('pageProgress').style.width=Math.min(100,ratio*100)+'%';}
 function renderDocSwitch(){
  if(desktop){const atual=documentos.find(d=>d.arquivo===documentoAtivo);$('docTitle').textContent=atual?.nome||'Currículo';}
  else{const words=dados.nome.trim().split(/\s+/);const curto=words.slice(0,2).join(' ');$('docTitle').textContent=curto?'Currículo de '+curto:'Meu currículo';}
@@ -978,10 +1025,60 @@ let previousFocus;
 function showDialog(title,build){previousFocus=document.activeElement;$('dialogTitle').textContent=title;$('dialogBody').replaceChildren();build($('dialogBody'));$('dialog').showModal();}
 function closeDialog(){if(!startupError)$('dialog').close();}
 $('closeDialog').onclick=closeDialog;$('dialog').addEventListener('close',()=>previousFocus?.isConnected&&previousFocus.focus());$('dialog').addEventListener('click',e=>{const r=$('dialog').getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)closeDialog();});
+// O aplicativo sabia renomear, reordenar e excluir seções, mas não criar uma —
+// só o servidor MCP criava. Aqui a lista de seções volta a ser sua.
+const LIMITE_SECOES=40;
+function novaSecao(){
+ $('sidebar').classList.remove('open');$('mobileMenu').setAttribute('aria-expanded','false');
+ if(dados.secoes.length>=LIMITE_SECOES){notify('Este currículo já tem o número máximo de seções.');return;}
+ let tipo='entradas';
+ showDialog('Nova seção',body=>{
+  const f=field('Título','',()=>{},{placeholder:'Ex.: Projetos, Publicações, Voluntariado'});
+  const input=f.querySelector('input');
+  const escolha=node('div','field');
+  const rotulo=node('label','','Como esta seção se organiza');rotulo.id='rotulo-tipo-secao';
+  const grupo=segmentado([['Lista de itens','entradas'],['Texto corrido','texto']],tipo,v=>tipo=v);
+  grupo.setAttribute('role','group');grupo.setAttribute('aria-labelledby',rotulo.id);
+  escolha.append(rotulo,grupo);
+  escolha.append(node('span','hint','Lista de itens é para experiências, formação e cursos: cada um com período, local e atividades. Texto corrido é um parágrafo só, como Perfil ou Idiomas.'));
+  const criar=button('Criar seção',()=>{
+   const titulo=input.value.trim();
+   if(!titulo){input.focus();return;}
+   const secao=tipo==='texto'?{tipo:'texto',titulo,corpo:''}:{tipo:'entradas',titulo,itens:[{org:'',cargo:'',local:'',periodo:'',topicos:['']}]};
+   const indice=dados.secoes.push(secao)-1;
+   closeDialog();save();navigate(indice);
+   $('editorBody').querySelector('input,textarea')?.focus();
+   notify('Seção “'+titulo+'” criada.',()=>{dados.secoes.splice(indice,1);active='personal';});
+  },'btn primary','plus');
+  input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();criar.click();}});
+  body.append(f,escolha,criar);
+  input.focus();
+ });
+}
 function renameSection(sec){showDialog('Nome da seção',body=>{const f=field('Título',sec.titulo,()=>{});const input=f.querySelector('input');body.append(f,button('Salvar nome',()=>{if(!input.value.trim()){input.focus();return;}sec.titulo=input.value.trim();changed();renderNav();renderEditor();closeDialog();},'btn primary'));});}
 function setMobilePreview(on){document.body.classList.toggle('mobile-preview',on);$('tabEdit').classList.toggle('selected',!on);$('tabPreview').classList.toggle('selected',on);$('tabEdit').setAttribute('aria-pressed',String(!on));$('tabPreview').setAttribute('aria-pressed',String(on));$('tabPill').style.setProperty('--i',on?1:0);requestAnimationFrame(fitPreview);}
 $('tabEdit').onclick=()=>{document.body.classList.remove('preview-mode');setMobilePreview(false);};$('tabPreview').onclick=()=>setMobilePreview(true);
 $('expandPreview').onclick=()=>{const on=document.body.classList.toggle('preview-mode');$('expandPreview').setAttribute('aria-pressed',String(on));$('expandPreview').setAttribute('aria-label',on?'Voltar à edição':'Ampliar prévia');requestAnimationFrame(fitPreview);};
+$('zoomIn').onclick=()=>aplicarZoom(ZOOM_NIVEIS.find(n=>n>escalaAtual+.005)??ZOOM_MAX);
+$('zoomOut').onclick=()=>aplicarZoom([...ZOOM_NIVEIS].reverse().find(n=>n<escalaAtual-.005)??ZOOM_MIN);
+$('zoomLevel').onclick=ajustarZoom;
+// Pinça do trackpad. O Chromium a entrega como roda com Ctrl; o WebKit, como
+// gesto próprio — daí os dois caminhos, e a trava para não ampliar em dobro.
+{
+ const quadro=$('paperFrame');
+ let emGesto=false,escalaGesto=1;
+ quadro.addEventListener('wheel',e=>{if(emGesto||!(e.ctrlKey||e.metaKey))return;e.preventDefault();aplicarZoom(escalaAtual*Math.exp(-e.deltaY/180),{x:e.clientX,y:e.clientY});},{passive:false});
+ quadro.addEventListener('gesturestart',e=>{e.preventDefault();emGesto=true;escalaGesto=escalaAtual;},{passive:false});
+ quadro.addEventListener('gesturechange',e=>{e.preventDefault();aplicarZoom(escalaGesto*e.scale,{x:e.clientX,y:e.clientY});},{passive:false});
+ quadro.addEventListener('gestureend',e=>{e.preventDefault();emGesto=false;},{passive:false});
+}
+// A folha é um índice: clicar num bloco abre a seção dele no editor. Selecionar
+// texto continua valendo — só navega o clique que não deixou seleção.
+$('cv').addEventListener('click',e=>{
+ const alvo=e.target.closest('[data-secao]');
+ if(!alvo||!getSelection().isCollapsed)return;
+ navigate(alvo.dataset.secao==='personal'?'personal':Number(alvo.dataset.secao));
+});
 $('mobileMenu').onclick=()=>{const open=$('sidebar').classList.toggle('open');$('mobileMenu').setAttribute('aria-expanded',String(open));};
 function closeMenu(){$('moreMenu').hidden=true;$('moreButton').setAttribute('aria-expanded','false');}
 function closeDocSwitch(){$('docSwitchMenu').hidden=true;$('docSwitchButton').setAttribute('aria-expanded','false');}

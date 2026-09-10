@@ -6,10 +6,12 @@ Você pode usar o Folium de duas formas: pelo **aplicativo** (Windows e macOS) o
 
 1. Escolha uma seção no menu à esquerda. No celular, abra o menu no canto superior esquerdo.
 2. Preencha os campos. A prévia acompanha as alterações; no celular, toque em **Ver currículo**.
-3. Em **Experiência profissional**, abra um item para editar ou use **Adicionar experiência**. Cada experiência pode ter novas atividades.
-4. Use **Adicionar seção** para incluir projetos, voluntariado ou outros assuntos. As setas mudam a ordem; depois de excluir, **Desfazer** fica disponível por alguns segundos.
-5. Em **Aparência**, escolha o tema do aplicativo (claro, escuro ou o do sistema), ajuste o espaçamento e a fonte, e decida se a foto aparece no documento.
-6. Em **Sobre o Folium**, você encontra o que o aplicativo é e onde os seus dados ficam.
+3. Para ver a folha de perto, use **−** e **+** acima dela, ou a pinça do trackpad sobre a folha. O percentual, entre os dois botões, volta ao tamanho que cabe na coluna.
+4. Clicar num bloco da folha abre a seção dele no editor.
+5. Em **Experiência profissional**, abra um item para editar ou use **Adicionar experiência**. Cada experiência pode ter novas atividades.
+6. Use **Nova seção**, no fim da lista à esquerda, para incluir projetos, voluntariado ou outros assuntos. Escolha entre **lista de itens**, com período e atividades em cada um, e **texto corrido**, um parágrafo só. As setas no fim da seção mudam a ordem; depois de excluir, **Desfazer** fica disponível por alguns segundos.
+7. Em **Aparência**, escolha o tema do aplicativo (claro, escuro ou o do sistema), ajuste o espaçamento e a fonte, e decida se a foto aparece no documento.
+8. Em **Sobre o Folium**, você encontra o que o aplicativo é e onde os seus dados ficam.
 
 ## Guardar
 

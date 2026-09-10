@@ -7,9 +7,9 @@ Editor de currículo offline para Windows e macOS. Você preenche os campos à e
 ## O que ele faz
 
 - **Um modelo clássico, de uma coluna**, inspirado no formato de currículo de Harvard: datas junto de cada experiência e texto selecionável no PDF, o que sistemas de recrutamento leem sem tropeçar.
-- **Prévia fiel em A4**, com indicador de quando o conteúdo passa de uma página e ajuste de espaçamento.
+- **Prévia fiel em A4**, com ampliação pelos botões ou pela pinça do trackpad, indicador de quando o conteúdo passa de uma página e ajuste de espaçamento.
 - **Tema claro, escuro ou acompanhando o sistema**, incluindo a janela nativa. A folha do currículo continua branca nos três — é ela que vai ser impressa.
-- **Seções livres**: experiência, formação, cursos, idiomas, competências ou qualquer seção que você criar, com reordenação e desfazer.
+- **Seções livres**: experiência, formação, cursos, idiomas, competências ou qualquer seção que você criar — em lista de itens ou em texto corrido —, com reordenação e desfazer.
 - **Saídas**: PDF pela impressão do sistema, backup em JSON e uma cópia editável em HTML que abre com dois cliques em qualquer computador, sem instalar nada.
 - **Offline de verdade**: nenhum conteúdo remoto, nenhuma requisição de rede, nenhuma conta.
 

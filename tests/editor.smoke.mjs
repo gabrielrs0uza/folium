@@ -33,6 +33,68 @@ try {
   await offline.close();
   console.log('PASS: browser persistence and portable HTML offline');
 
+  await page.getByRole('button', { name: 'Nova seção', exact: true }).click();
+  await page.getByLabel('Título', { exact: true }).fill('Projetos');
+  await page.getByRole('button', { name: 'Criar seção', exact: true }).click();
+  await page.locator('#editorTitle').filter({ hasText: 'Projetos' }).waitFor();
+  assert.equal(await page.locator('.nav-item', { hasText: 'Projetos' }).count(), 1, 'a new section joins the sidebar');
+  assert.equal(await page.locator('.add-button').last().textContent(), 'Adicionar item');
+  await page.getByRole('button', { name: 'Desfazer', exact: true }).click();
+  assert.equal(await page.locator('.nav-item', { hasText: 'Projetos' }).count(), 0, 'undo removes a section that was just created');
+
+  await page.getByRole('button', { name: 'Nova seção', exact: true }).click();
+  await page.getByLabel('Título', { exact: true }).fill('Voluntariado');
+  await page.getByRole('button', { name: 'Texto corrido', exact: true }).click();
+  await page.getByRole('button', { name: 'Criar seção', exact: true }).click();
+  await page.getByRole('textbox', { name: 'Voluntariado', exact: true }).fill('Mutirão de currículos.');
+  assert.deepEqual(
+    await page.evaluate(() => JSON.parse(localStorage.getItem('cv-folium-v3')).secoes.at(-1)),
+    { tipo: 'texto', titulo: 'Voluntariado', corpo: 'Mutirão de currículos.' },
+    'each shape of section is stored the way its editor writes it');
+  console.log('PASS: sections can be created in both shapes, and undone');
+
+  await page.locator('.nav-item', { hasText: 'Informações pessoais' }).click();
+  await page.locator('#cv .cv-section', { hasText: 'Mutirão de currículos.' }).click();
+  assert.equal(await page.locator('#editorTitle').textContent(), 'Voluntariado', 'clicking a block on the sheet opens its section');
+  await page.locator('#cv .cv-header').click();
+  assert.equal(await page.locator('#editorTitle').textContent(), 'Informações pessoais');
+  await page.getByRole('button', { name: 'Próxima seção', exact: true }).click();
+  await page.getByRole('button', { name: 'Seção anterior', exact: true }).click();
+  assert.equal(await page.locator('#editorTitle').textContent(), 'Informações pessoais');
+  assert.ok(await page.getByRole('button', { name: 'Seção anterior', exact: true }).isHidden(), 'the first screen has nothing before it');
+  console.log('PASS: the sheet and the editor footer navigate between sections');
+
+  const olhar = () => page.evaluate(() => ({
+    escala: +new DOMMatrix(getComputedStyle(document.getElementById('paper')).transform).a.toFixed(4),
+    rotulo: document.getElementById('zoomLevel').textContent,
+    largura: Math.round(document.getElementById('paperFrame').getBoundingClientRect().width),
+    ampliado: document.getElementById('paperFrame').classList.contains('ampliado'),
+  }));
+  const ajustado = await olhar();
+  assert.equal(ajustado.rotulo, Math.round(ajustado.escala * 100) + '%');
+  assert.equal(ajustado.ampliado, false);
+  await page.locator('#zoomIn').click();
+  const aproximado = await olhar();
+  assert.ok(aproximado.escala > ajustado.escala, 'the plus button enlarges the sheet');
+  assert.equal(aproximado.largura, ajustado.largura, 'the frame keeps its size while the sheet grows inside it');
+  assert.ok(await page.evaluate(() => {
+    const f = document.getElementById('paperFrame');
+    return f.scrollHeight > f.clientHeight + 4;
+  }), 'the enlarged sheet scrolls inside the frame');
+  await page.locator('#paperFrame').hover();
+  const rolagem = await page.evaluate(() => window.scrollY);
+  await page.keyboard.down('Control');
+  await page.mouse.wheel(0, -240);
+  await page.keyboard.up('Control');
+  assert.ok((await olhar()).escala > aproximado.escala, 'a trackpad pinch enlarges the sheet further');
+  assert.equal(await page.evaluate(() => window.scrollY), rolagem, 'the pinch zooms the sheet without scrolling the page');
+  await page.locator('#zoomLevel').click();
+  assert.deepEqual(await olhar(), ajustado, 'the percentage goes back to fitting the column');
+  await page.emulateMedia({ media: 'print' });
+  assert.equal(await page.evaluate(() => getComputedStyle(document.getElementById('paper')).transform), 'none', 'print ignores the zoom');
+  await page.emulateMedia({ media: 'screen' });
+  console.log('PASS: preview zoom by buttons, percentage and trackpad pinch');
+
   const native = await browser.newContext();
   await native.addInitScript(() => {
     window.mock = { saved: null, exports: [], cancel: false, broken: false, printed: false };
